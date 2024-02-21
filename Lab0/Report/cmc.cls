@@ -63,7 +63,7 @@ includehead
 \usepackage{multicol}
 
 % ---- Title ----%
-\title{Computational Motor Control - 2022}
+\title{Computational Motor Control - 2024}
 
 % ----newcommand----%
 \newcommand{\corr}[1]{\textcolor{red}{#1}}
