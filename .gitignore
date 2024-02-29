@@ -1,4 +1,4 @@
-# Laxex
+# Latex
 *.aux
 *.log
 *.out
@@ -6,3 +6,6 @@
 *.fls
 *.fdb_latexmk
 *.synctex.gz
+
+# Python
+__pycache__/
