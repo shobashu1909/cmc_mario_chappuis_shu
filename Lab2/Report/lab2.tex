@@ -71,12 +71,12 @@
 
 \subsection*{1.a Find the fixed points of the pendulum with friction
   (i.e. damping), and analyze their stability using a local linearization
-  (briefly describe the calculation steps). }
+  under no external input $T_{ext}=0$ (briefly describe the calculation steps). }
 
 
 \begin{equation}
   \label{eq:ode-pendulum}
-  I\ddot{\theta} = -mgLsin(\theta) + T_{ext}
+  I\ddot{\theta} = -mgLsin(\theta) + T_{ext} + b \dot{\theta}
 \end{equation}
 
 Considering Inertia $I = mL^2$, the equation of the pendulum can be
@@ -84,11 +84,11 @@ written as,
 
 \begin{equation}
   \label{eq:pendulum}
-  \ddot{\theta} = -g\frac{sin(\theta)}{L} + \frac{T_{ext}}{I}
+  \ddot{\theta} = -g\frac{sin(\theta)}{L} + \frac{T_{ext}}{I} + b \frac{\dot{\theta}}{I}
 \end{equation}
 
 where $\theta$ is the angle, $g$ the gravity constant, $L$ the length of the pendulum
-and $d$ is the damping coefficient.
+and $b$ is the damping coefficient.
 
 
 \subsection*{1.b Numerically solve the differential equations of the pendulum
@@ -101,10 +101,10 @@ and $d$ is the damping coefficient.
 
 
 \subsection*{1.c Investigate and describe how the behavior of the pendulum
-  changes if friction is zero (d=0).  Show a new phase portrait.}
+  changes if friction is zero (b=0).  Show a new phase portrait.}
 
 
-\subsection*{1.d Does the pendulum without friction (d=0) produce stable limit
+\subsection*{1.d Does the pendulum without friction (b=0) produce stable limit
   cycles? Discuss, and try to support your statement with some numerical
   simulations (show figures) and/or analytical arguments.}
 
@@ -118,7 +118,7 @@ and $d$ is the damping coefficient.
 
 \begin{equation}
   \label{eq:ode-pendulum-dry}
-  \ddot{\theta} = - {g \over L} \sin \theta - d \cdot sign(\dot{\theta})
+  \ddot{\theta} = - {g \over L} \sin \theta - b \cdot sign(\dot{\theta})
 \end{equation}
 
 
