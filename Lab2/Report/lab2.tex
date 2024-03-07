@@ -70,13 +70,14 @@
 \section*{Question 1: Pendulum with friction}
 
 \subsection*{1.a Find the fixed points of the pendulum with friction
-  (i.e. damping), and analyze their stability using a local linearization
-  under no external input $T_{ext}=0$ (briefly describe the calculation steps). }
+  (i.e. damping, and analyze their stability using a local linearization
+  under no external input $T_{ext}=0$ ) expressed in the following equation
+  (briefly describe the calculation steps). }
 
 
 \begin{equation}
   \label{eq:ode-pendulum}
-  I\ddot{\theta} = -mgLsin(\theta) + T_{ext} + b \dot{\theta}
+  I\ddot{\theta} = -mgLsin(\theta) + T_{ext} - b \dot{\theta}
 \end{equation}
 
 Considering Inertia $I = mL^2$, the equation of the pendulum can be
@@ -84,18 +85,18 @@ written as,
 
 \begin{equation}
   \label{eq:pendulum}
-  \ddot{\theta} = -g\frac{sin(\theta)}{L} + \frac{T_{ext}}{I} + b \frac{\dot{\theta}}{I}
+  \ddot{\theta} = -g\frac{sin(\theta)}{L} + \frac{T_{ext}}{I} - b \frac{\dot{\theta}}{I}
 \end{equation}
 
 where $\theta$ is the angle, $g$ the gravity constant, $L$ the length of the pendulum
 and $b$ is the damping coefficient.
 
 
-\subsection*{1.b Numerically solve the differential equations of the pendulum
+\subsection*{1.b Implement the the damping equation of the pendulum using equations described above in the function
+  \fileref{pendulum\_system.py::pendulum\_equation}. Numerically solve the differential equations of the pendulum
   with different initial conditions.  Show several time evolutions and phase
   portraits with different initial conditions that illustrate several aspects of
-  the interesting behavior of the pendulum. Additionally, modify the damping parameter
-  and demonstrate examples of underdampded, critically damped and overdamped behaviors.
+  the interesting behavior of the pendulum. Additionally, implement the damping parameter and demonstrate examples of underdampded, critically damped and overdamped behaviors.
   See \fileref{exercise1.py} and \fileref{system\_parameters.py} and
   \fileref{pendulum\_system.py} for help with implementation.}
 
