@@ -70,13 +70,14 @@
 \section*{Question 1: Pendulum with friction}
 
 \subsection*{1.a Find the fixed points of the pendulum with friction
-  (i.e. damping), and analyze their stability using a local linearization
+  (i.e. damping, and analyze their stability using a local linearization
+  under no external input $T_{ext}=0$ ) expressed in the following equation
   (briefly describe the calculation steps). }
 
 
 \begin{equation}
   \label{eq:ode-pendulum}
-  I\ddot{\theta} = -mgLsin(\theta) + T_{ext}
+  I\ddot{\theta} = -mgLsin(\theta) + T_{ext} - b \dot{\theta}
 \end{equation}
 
 Considering Inertia $I = mL^2$, the equation of the pendulum can be
@@ -84,11 +85,11 @@ written as,
 
 \begin{equation}
   \label{eq:pendulum}
-  \ddot{\theta} = -g\frac{sin(\theta)}{L} + \frac{T_{ext}}{I}
+  \ddot{\theta} = -g\frac{sin(\theta)}{L} + \frac{T_{ext}}{I} - b \frac{\dot{\theta}}{I}
 \end{equation}
 
 where $\theta$ is the angle, $g$ the gravity constant, $L$ the length of the pendulum
-and $d$ is the damping coefficient.
+and $b$ is the damping coefficient.
 
 
 \corr{\textbf{Fixed points:}}
@@ -97,7 +98,7 @@ and $d$ is the damping coefficient.
   \begin{equation}
     \label{eq:fixed_points}
     \begin{aligned}
-      & \dot{x}_2 = - {g \over L} \sin x_1 - d x_2 & \qquad & sin(\widetilde{x}_1)=0
+      & \dot{x}_2 = - {g \over L} \sin x_1 - b x_2 & \qquad & sin(\widetilde{x}_1)=0
       \quad \Rightarrow \quad \widetilde{x}_1 = n\pi, \quad n \in Z
       \\
       & \dot{x}_1 = x_2 = 0 & \qquad & \widetilde{x}_2 = 0
@@ -112,16 +113,16 @@ and $d$ is the damping coefficient.
     \label{eq:jacobian}
     J =
     \begin{pmatrix}
-      0 & 1 \\ - {g \over L} \cos x_1 & - d
+      0 & 1 \\ - {g \over L} \cos x_1 & - b
     \end{pmatrix}
     \quad
     \Rightarrow
     \quad
-    \lambda^2 + d\lambda + {g \over L} \cos x_1 = 0
+    \lambda^2 + b\lambda + {g \over L} \cos x_1 = 0
     \quad
     \Rightarrow
     \quad
-    \lambda_\pm = {-d \pm \sqrt{d^2 - 4{g \over L}\cos x_1} \over 2}
+    \lambda_\pm = {-b \pm \sqrt{b^2 - 4{g \over L}\cos x_1} \over 2}
   \end{equation}
 }
 
@@ -131,11 +132,11 @@ and $d$ is the damping coefficient.
   point is unstable (saddle point).}
 
 
-\subsection*{1.b Numerically solve the differential equations of the pendulum
+\subsection*{1.b Implement the the damping equation of the pendulum using equations described above in the function
+  \fileref{pendulum\_system.py::pendulum\_equation}. Numerically solve the differential equations of the pendulum
   with different initial conditions.  Show several time evolutions and phase
   portraits with different initial conditions that illustrate several aspects of
-  the interesting behavior of the pendulum. Additionally, modify the damping parameter
-  and demonstrate examples of underdampded, critically damped and overdamped behaviors.
+  the interesting behavior of the pendulum. Additionally, implement the damping parameter and demonstrate examples of underdampded, critically damped and overdamped behaviors.
   See \fileref{exercise1.py} and \fileref{system\_parameters.py} and
   \fileref{pendulum\_system.py} for help with implementation.}
 
@@ -184,7 +185,7 @@ and $d$ is the damping coefficient.
     }
     \caption{\corr{Phase portrait}}
   \end{subfigure}
-  \caption{\corr{Different types of fixed point are obtained depending on the sign of $ \Delta = d^2 - 4{g \over L}$.
+  \caption{\corr{Different types of fixed point are obtained depending on the sign of $ \Delta = b^2 - 4{g \over L}$.
   Note that the underdamped solution shows an overshoot before settling at the equilibrium point.
   Also note that the critically damped solution decays faster than the overdamped (and underdamped) one.} }
   \label{fig:fixed-point-type}
@@ -259,7 +260,7 @@ and $d$ is the damping coefficient.
 
 
 \subsection*{1.c Investigate and describe how the behavior of the pendulum
-  changes if friction is zero (d=0).  Show a new phase portrait.}
+  changes if friction is zero (b=0).  Show a new phase portrait.}
 
 
 \begin{figure}[H]
@@ -287,7 +288,7 @@ and $d$ is the damping coefficient.
 \end{figure}
 
 
-\subsection*{1.d Does the pendulum without friction (d=0) produce stable limit
+\subsection*{1.d Does the pendulum without friction (b=0) produce stable limit
   cycles? Discuss, and try to support your statement with some numerical
   simulations (show figures) and/or analytical arguments.}
 
@@ -324,7 +325,7 @@ and $d$ is the damping coefficient.
 
 \begin{equation}
   \label{eq:ode-pendulum-dry}
-  \ddot{\theta} = - {g \over L} \sin \theta - d \cdot sign(\dot{\theta})
+  \ddot{\theta} = - {g \over L} \sin \theta - b \cdot sign(\dot{\theta})
 \end{equation}
 
 
@@ -351,7 +352,7 @@ and $d$ is the damping coefficient.
 \corr{This represents a stiff dynamical system, i.e. a system that is difficult
   to integrate numerically.  Indeed, this pendulum is difficult to solve
   numerically because of the switch of derivatives when the angular velocity
-  changes sign (friction jumping between d and –d). Many more integration times
+  changes sign (friction jumping between b and –b). Many more integration times
   steps are needed than for the pendulum with viscous friction. The higher d,
   the more difficulties the integration method has.}
 
@@ -553,14 +554,14 @@ when compressed.
     { \centering
       \includegraphics[width=\textwidth]{figures/State_Spring_Constant_1(x0_=_[0dot5,_0dot1]).pdf}
     }
-    \caption{State of pendulum with high spring constant}
+    \caption{State of pendulum with low spring constant}
     \label{fig:state-pendulum-spring-constant-1}
   \end{subfigure}
   \begin{subfigure}[b]{0.49\textwidth}
     { \centering
       \includegraphics[width=\textwidth]{figures/Phase_Spring_Constant_1(x0_=_[0dot5,_0dot1]).pdf}
     }
-    \caption{Phase of pendulum with high spring constant}
+    \caption{Phase of pendulum with low spring constant}
     \label{fig:phase-pendulum-spring-constant-1}
   \end{subfigure}
   \caption{\corr{State of pendulum with spring to study the effect of
@@ -574,14 +575,14 @@ when compressed.
     { \centering
       \includegraphics[width=\textwidth]{figures/State_Spring_Constant_2(x0_=_[0dot5,_0dot1]).pdf}
     }
-    \caption{State of pendulum with low spring constant}
+    \caption{State of pendulum with high spring constant}
     \label{fig:state-pendulum-spring-constant-2}
   \end{subfigure}
   \begin{subfigure}[b]{0.49\textwidth}
     { \centering
       \includegraphics[width=\textwidth]{figures/Phase_Spring_Constant_2(x0_=_[0dot5,_0dot1]).pdf}
     }
-    \caption{Phase of pendulum with low spring constant}
+    \caption{Phase of pendulum with high spring constant}
     \label{fig:phase-pendulum-spring-constant-2}
   \end{subfigure}
   \caption{\corr{State of pendulum with spring to study the effect of

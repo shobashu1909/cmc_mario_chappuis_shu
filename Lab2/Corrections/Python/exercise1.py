@@ -96,7 +96,9 @@ def fixed_point_types(time: float, *args):
     """Pendulum limit cycle"""
     # Initialize the parameters without damping
     pendulum = args[0]
-
+    pendulum.parameters.k1 = 0 
+    pendulum.parameters.k2 = 0
+    
     pylog.info('Evolution with modified parameters')
 
     figname = 'Fixed point types'
