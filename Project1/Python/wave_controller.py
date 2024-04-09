@@ -28,6 +28,12 @@ class WaveController:
         self.muscle_l = 2*np.arange(15)
         # indexes of the right muscle activations (optional)
         self.muscle_r = self.muscle_l+1
+    
+    def calculate_MLi(self, t, A, f, epsilon, n_joints, i):
+        return 0.5 + A/2 * np.sin((2*np.pi * (f*t - epsilon*i/n_joints)))
+
+    def calculate_MRi(self, t, A, f, epsilon, n_joints, i):
+        return 0.5 - A/2 * np.sin((2*np.pi * (f*t - epsilon*i/n_joints)))
 
     def step(self, iteration, time, timestep, pos=None):
         """
@@ -46,5 +52,20 @@ class WaveController:
         In addition to returning the activation functions, store
         them in self.state for later use offline
         """
-        return np.zeros(30)
+
+        A = self.pars.amplitude
+        f = self.pars.frequency
+        epsilon = self.pars.wave_frequency
+        n_joints = self.n_joints
+        activation_functions = np.zeros(n_joints*2)
+
+        for i in range(n_joints*2):
+            if i%2 == 0:
+                activation_functions[i] = self.calculate_MLi(time, A, f, epsilon, n_joints, i)
+            else:
+                activation_functions[i] = self.calculate_MRi(time, A, f, epsilon, n_joints, i)
+        
+        self.state[iteration] = activation_functions
+
+        return activation_functions
 
