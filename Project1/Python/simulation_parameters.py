@@ -27,9 +27,11 @@ class SimulationParameters:
         self.n_iterations = 10001  # number of integration time steps
         
         # Parameters for the wave controller
-        self.amplitude = 0.5
+        self.amplitude = 1
         self.frequency = 1
         self.wave_frequency = 0.5
+        self.square = False
+        self.steepness = 0.1
 
         # gui/recording parameters
         self.headless = True  # For headless mode (No GUI, could be faster)
