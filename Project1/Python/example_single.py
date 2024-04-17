@@ -15,7 +15,7 @@ def exercise_single(**kwargs):
     os.makedirs(log_path, exist_ok=True)
 
     all_pars = SimulationParameters(
-        n_iterations=3001,
+        n_iterations=8001,
         controller="sine",
         log_path=log_path,
         compute_metrics=3,

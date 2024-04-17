@@ -238,6 +238,7 @@ def plot_left_right(times, state, left_idx, right_idx, cm="jet", offset=0.3):
 
 def plot_trajectory(controller, label=None, color=None):
     """Plot head positions"""
+    print("here")
     head_positions = np.array(controller.links_positions)[:, 0, :]
     plt.plot(head_positions[:, 0], head_positions[:, 1],
              label=label, color=color)
@@ -245,6 +246,8 @@ def plot_trajectory(controller, label=None, color=None):
     plt.ylabel('y [m]')
     plt.axis('equal')
     plt.grid(True)
+
+    plt.show()
 
 
 def plot_positions(times, link_data):

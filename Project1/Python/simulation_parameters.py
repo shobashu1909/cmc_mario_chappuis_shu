@@ -27,9 +27,9 @@ class SimulationParameters:
         self.n_iterations = 10001  # number of integration time steps
         
         # Parameters for the wave controller
-        self.amplitude = 0.5
-        self.frequency = 1
-        self.wave_frequency = 0.5
+        self.amplitude = 0.5 # amplitude of the sine wave [0;2]
+        self.frequency = 1 # frequency of the sine wave [1;5]
+        self.wave_frequency = 0.5 # wave frequency of the sine wave [0;2]
 
         # gui/recording parameters
         self.headless = True  # For headless mode (No GUI, could be faster)
