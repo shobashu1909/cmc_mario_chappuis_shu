@@ -37,16 +37,16 @@ def exercise1():
     # Now, create the pars_list using a nested list comprehension
     pars_list = [
         SimulationParameters(
-            simulation_i=i * nsim + j,
-            n_iterations=8001,
-            log_path=log_path,
-            video_record=False,
-            compute_metrics=2,
-            amp=amp_values[i],
-            wavefrequency=wavefrequency_values[j],
-            headless=True,
-            print_metrics=True,
-            return_network=True
+            simulation_i = i * nsim + j,
+            n_iterations = 8001,
+            log_path = log_path,
+            video_record = False,
+            compute_metrics = 2,
+            amp = amp_values[i],
+            wavefrequency = wavefrequency_values[j],
+            headless = True,
+            print_metrics = True,
+            return_network = True
         )
         for i in range(nsim)
         for j in range(nsim)
