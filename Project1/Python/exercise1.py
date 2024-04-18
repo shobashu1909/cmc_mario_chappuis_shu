@@ -38,12 +38,12 @@ def exercise1():
     pars_list = [
         SimulationParameters(
             simulation_i = i * nsim + j,
-            n_iterations = 8001,
+            n_iterations = 10001,
             log_path = log_path,
             video_record = False,
             compute_metrics = 2,
-            amp = amp_values[i],
-            wavefrequency = wavefrequency_values[j],
+            amplitude = amp[i],
+            wave_frequency = wavefrequency[j],
             headless = True,
             print_metrics = True,
             return_network = True
