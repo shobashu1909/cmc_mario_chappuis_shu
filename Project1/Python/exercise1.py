@@ -37,16 +37,16 @@ def exercise1():
     # Now, create the pars_list using a nested list comprehension
     pars_list = [
         SimulationParameters(
-            simulation_i=i * nsim + j,
-            n_iterations=10001,
-            log_path=log_path,
-            video_record=False,
-            compute_metrics=2,
-            amplitude=amp,
-            wave_frequency=wavefrequency,
-            headless=True,
-            print_metrics=True,
-            return_network=True
+            simulation_i = i * nsim + j,
+            n_iterations = 8001,
+            log_path = log_path,
+            video_record = False,
+            compute_metrics = 2,
+            amp = amp_values[i],
+            wavefrequency = wavefrequency_values[j],
+            headless = True,
+            print_metrics = True,
+            return_network = True
         )
         for i, amp in enumerate(np.linspace(0.05, 0.3, nsim))
         for j, wavefrequency in enumerate(np.linspace(0., 0.1, nsim))
@@ -73,7 +73,7 @@ def exercise1():
         ]
     # print(fspeeds)
     # print(controller.metrics["fspeed_cycle"])
-    
+
     plt.figure('Forward Speed [m/s]', figsize=[10, 10])
     plot_2d(
         fspeeds,
