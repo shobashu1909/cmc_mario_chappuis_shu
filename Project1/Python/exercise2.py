@@ -38,6 +38,8 @@ def exercise2(**kwargs):
     right_idx = controller.muscle_r
 
     # example plot using plot_left_right
+    plt.figure("Left & Right muscle activity")
+
     plot_left_right(
         controller.times,
         controller.state,
@@ -50,29 +52,9 @@ def exercise2(**kwargs):
     plt.figure("trajectory")
     plot_trajectory(controller)
 
-    # example plot using plot_time_histories_multiple_windows
-    plt.figure("joint positions")
-    plot_time_histories_multiple_windows(
-        controller.times,
-        controller.joints_positions,
-        offset=-0.4,
-        colors="green",
-        ylabel="joint positions",
-        lw=1
-    )
-
-    # example plot using plot_time_histories
-    plt.figure("link y-velocities")
-    plot_time_histories(
-        controller.times,
-        controller.links_velocities[:, :, 1],
-        offset=-0.,
-        colors="green",
-        ylabel="link y-velocities",
-        lw=1
-    )
+    
 
 if __name__ == '__main__':
-    exercise2()
+    exercise2(headless=False)
     plt.show()
 

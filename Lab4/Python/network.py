@@ -30,6 +30,8 @@ class FiringRateController:
                 'Implement in self.rhs_single the equations for the single unit')
             self.ode_rhs = self.rhs_single
 
+            
+
         elif self.pars.equation_type == "coupled":
 
             n_eq = 4
