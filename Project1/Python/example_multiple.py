@@ -5,6 +5,9 @@ import os
 import numpy as np
 import farms_pylog as pylog
 
+import matplotlib.pyplot as plt
+from plot_results import plot_exercise_multiple
+
 
 def exercise_multiple():
 
@@ -18,7 +21,7 @@ def exercise_multiple():
     pars_list = [
         SimulationParameters(
             simulation_i=i*nsim+j,
-            n_iterations=3001,
+            n_iterations=10001,
             log_path=log_path,
             video_record=False,
             compute_metrics=2,
@@ -33,7 +36,10 @@ def exercise_multiple():
 
     run_multiple(pars_list, num_process=16)
 
+    pylog.info("Plotting the result")
+    #plot_exercise_multiple(nsim**2, log_path)
 
 if __name__ == '__main__':
     exercise_multiple()
+    plt.show()
 

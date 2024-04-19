@@ -36,12 +36,6 @@ class WaveController:
 
     def calculate_MRi(self, t, A, f, epsilon, n_joints, i):
         return 0.5 - A/2 * np.sin((2*np.pi * (f*t - epsilon*i/n_joints)))
-    
-    def calculate_MLi_square(self, t, A, f, epsilon, n_joints, i, steepness):
-        return 0.5 + A/2 * np.sin((2*np.pi * (f*t - epsilon*i/n_joints))) + np.exp(-steepness * np.sin((2*np.pi * (f*t - epsilon*i/n_joints))))/(1 + np.exp(-steepness * np.sin((2*np.pi * (f*t - epsilon*i/n_joints)))))
-
-    def calculate_MRi_square(self, t, A, f, epsilon, n_joints, i, steepness):
-        return 0.5 - A/2 * np.sin((2*np.pi * (f*t - epsilon*i/n_joints))) - np.exp(-steepness * np.sin((2*np.pi * (f*t - epsilon*i/n_joints))))/(1 + np.exp(-steepness * np.sin((2*np.pi * (f*t - epsilon*i/n_joints)))))
 
     
     def gain_function(self, signal, steepness):
@@ -56,7 +50,15 @@ class WaveController:
             ndarray: Modified signal.
         """
         
-        return 2 / (1 + np.exp(-steepness * (signal - 0.5))) - 1
+        return 1 / (1 + np.exp(-steepness * signal)) - 0.5
+
+    def calculate_MLi_square(self, t, A, f, epsilon, n_joints, i, steepness):
+        signal = self.gain_function(np.sin((2*np.pi * (f*t - epsilon*i/n_joints))), steepness)
+        return 0.5 + A/2 * signal
+
+    def calculate_MRi_square(self, t, A, f, epsilon, n_joints, i, steepness):
+        signal = self.gain_function(np.sin((2*np.pi * (f*t - epsilon*i/n_joints))), steepness)
+        return 0.5 - A/2 * signal
 
     def step(self, iteration, time, timestep, pos=None):
         """
@@ -85,24 +87,21 @@ class WaveController:
         steepness = self.steepness
 
         # sine wave controller
-        for i in range(n_joints*2):
-            if i%2 == 0:
-                activation_functions[i] = self.calculate_MLi(time, A, f, epsilon, n_joints, i)
-            else:
-                activation_functions[i] = self.calculate_MRi(time, A, f, epsilon, n_joints, i)
+        if not square:
+            for i in range(n_joints*2):
+                if i%2 == 0:
+                    activation_functions[i] = self.calculate_MLi(time, A, f, epsilon, n_joints, i)
+                else:
+                    activation_functions[i] = self.calculate_MRi(time, A, f, epsilon, n_joints, i)
         
-        # square wave controller
-        #if square:
-            #activation_functions = self.gain_function(activation_functions, steepness)
-        
-        # square wave controller
+        # square wave controller
         if square:
             for i in range(n_joints*2):
-                if i%2 == 0: 
-                    activation_functions[i] = 1 if self.calculate_MLi(time, A, f, epsilon, n_joints, i) >= 0.5 else 0
+                if i%2 == 0:
+                    activation_functions[i] = self.calculate_MLi_square(time, A, f, epsilon, n_joints, i, steepness)
                 else:
-                    activation_functions[i] = 1 if self.calculate_MRi(time, A, f, epsilon, n_joints, i) >= 0.5 else 0
-        
+                    activation_functions[i] = self.calculate_MRi_square(time, A, f, epsilon, n_joints, i, steepness)
+
         self.state[iteration] = activation_functions
 
         return activation_functions
