@@ -24,10 +24,10 @@ def plot_exercise_multiple(n_simulations, logdir):
         fspeeds[i] = [
             controller.pars.amp,
             controller.pars.wavefrequency,
-            np.mean(controller.metrics["fspeed_PCA"])
+            np.mean(controller.metrics["fspeed_cycle"])
         ]
 
-    plt.figure('exercise_multiple', figsize=[6, 6])
+    plt.figure('exercise_multiple', figsize=[10, 10])
     plot_2d(
         fspeeds,
         ['Amp', 'wavefrequency', 'Forward Speed [m/s]'],
@@ -52,9 +52,9 @@ def main(plot=True):
     joints_active_torques = controller.joints_active_torques  # the joint active torques
     joints_velocities = controller.joints_velocities  # the joint velocities
     joints_positions = controller.joints_positions  # the joint positions
-    plot_exercise_multiple(4, 'logs/example_multiple/')
 
 
 if __name__ == '__main__':
     main(plot=True)
-    plt.show()
+
+
