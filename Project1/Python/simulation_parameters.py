@@ -27,8 +27,8 @@ class SimulationParameters:
         self.n_iterations = 10001  # number of integration time steps
         
         # Parameters for the wave controller
-        self.amplitude = 1
-        self.frequency = 1
+        self.amplitude = 0.5
+        self.frequency = 2.0
         self.wave_frequency = 0.5
         self.square = False
         self.steepness = 5
