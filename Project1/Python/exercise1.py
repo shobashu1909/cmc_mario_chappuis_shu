@@ -1,3 +1,4 @@
+
 from util.run_closed_loop import run_multiple
 from simulation_parameters import SimulationParameters
 import matplotlib.pyplot as plt
@@ -24,8 +25,8 @@ def exercise1():
 
     pylog.info(
         "Running multiple simulations in parallel from a list of SimulationParameters")
-    amp_values = list(np.linspace(0.2, 2, nsim))
-    wavefrequency_values = list(np.linspace(0.5, 2, nsim))
+    amp_values = list(np.linspace(0.05, 0.4, nsim))
+    wavefrequency_values = list(np.linspace(0., 0.1, nsim))
 
     for i, amp in enumerate(amp_values):
         print(f"amp{i} = {amp}")
@@ -37,18 +38,18 @@ def exercise1():
     pars_list = [
         SimulationParameters(
             simulation_i = i * nsim + j,
-            n_iterations = 10001,
+            n_iterations = 8001,
             log_path = log_path,
             video_record = False,
             compute_metrics = 2,
-            amp = amp,
-            wavefrequency = wavefrequency,
+            amp = amp_values[i],
+            wavefrequency = wavefrequency_values[j],
             headless = True,
             print_metrics = True,
             return_network = True
         )
-        for i, amp in enumerate(np.linspace(0.5, 2, nsim))
-        for j, wavefrequency in enumerate(np.linspace(0.2, 1, nsim))
+        for i in range(nsim)
+        for j in range(nsim)
     ]
 
     pylog.info("Running the simulation")
