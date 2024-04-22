@@ -28,7 +28,7 @@ class SimulationParameters:
         
         # Parameters for the wave controller
         self.amplitude = 1
-        self.frequency = 3
+        self.frequency = 1
         self.wave_frequency = 0.5
         self.square = False
         self.steepness = 5
