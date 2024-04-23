@@ -5,7 +5,7 @@ import os
 import numpy as np
 import farms_pylog as pylog
 import matplotlib.pyplot as plt
-from plotting_common import plot_left_right, plot_trajectory, plot_time_histories, plot_time_histories_multiple_windows
+from plotting_common import plot_left_right, plot_trajectory, plot_time_histories, plot_time_histories_multiple_windows_modified
 
 
 def exercise2(**kwargs):
@@ -36,6 +36,7 @@ def exercise2(**kwargs):
     right_idx = controller.muscle_r
 
     # example plot using plot_left_right
+    plt.figure("Left & Right muscle activity")
     plot_left_right(
         controller.times,
         controller.state,
@@ -50,7 +51,7 @@ def exercise2(**kwargs):
 
     # example plot using plot_time_histories_multiple_windows
     plt.figure("joint positions")
-    plot_time_histories_multiple_windows(
+    plot_time_histories_multiple_windows_modified(
         controller.times,
         controller.joints_positions,
         offset=-0.4,

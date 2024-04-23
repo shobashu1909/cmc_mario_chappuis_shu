@@ -50,16 +50,18 @@ class WaveController:
             ndarray: Modified signal.
         """
         
-        return 1 / (1 + np.exp(-steepness * signal)) - 0.5
+        return 2 * (1 / (1 + np.exp(-steepness * signal)) - 0.5)
 
     def calculate_MLi_square(self, t, A, f, epsilon, n_joints, i, steepness):
         signal = self.gain_function(np.sin((2*np.pi * (f*t - epsilon*i/n_joints))), steepness)
         return 0.5 + A/2 * signal
+        
 
     def calculate_MRi_square(self, t, A, f, epsilon, n_joints, i, steepness):
         signal = self.gain_function(np.sin((2*np.pi * (f*t - epsilon*i/n_joints))), steepness)
         return 0.5 - A/2 * signal
-
+    
+    
     def step(self, iteration, time, timestep, pos=None):
         """
         Step function. This function passes the activation functions of the muscle model
