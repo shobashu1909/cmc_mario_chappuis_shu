@@ -52,8 +52,8 @@ def exercise1():
         for j, wavefrequency in enumerate(np.linspace(0., 2, nsim))
     ]
 
-    pylog.info("Running the simulation")
-    controllers = run_multiple(pars_list, num_process=16)
+    # pylog.info("Running the simulation")
+    # controllers = run_multiple(pars_list, num_process=16)
 
     fspeeds = np.zeros([nsim*nsim, 3])
     lspeeds = np.zeros([nsim*nsim, 3])
@@ -80,6 +80,7 @@ def exercise1():
         ['Amp', 'wavefrequency', 'Forward Speed [m/s]'],
         cmap='nipy_spectral'
     )
+    plt.savefig('fspeed.png') 
 
     # fspeeds_PCA
     for i in range(nsim*nsim):
@@ -90,7 +91,6 @@ def exercise1():
             controller.pars.wave_frequency,
             np.mean(controller.metrics["fspeed_PCA"])
         ]
-    print(fspeeds_PCA)
     
     plt.figure('Forward Speed PCA[m/s] ', figsize=[10, 10])
     plot_2d(
@@ -98,6 +98,7 @@ def exercise1():
         ['Amp', 'wavefrequency', 'Forward Speed PCA[m/s]'],
         cmap='nipy_spectral'
     )
+    plt.savefig('fspeed_PCA.png')
 
     # lspeeds
     for i in range(nsim):
@@ -115,6 +116,7 @@ def exercise1():
         ['Amp', 'wavefrequency', 'L Speed[m/s]'],
         cmap='nipy_spectral'
     )
+    plt.savefig('lspeed.png')
 
     # lspeeds_PCA
     for i in range(nsim):
@@ -132,6 +134,8 @@ def exercise1():
         ['Amp', 'wavefrequency', 'L Speed PCA[m/s]'],
         cmap='nipy_spectral'
     )
+    plt.savefig('lspeed_PCA.png')
+
 
     # torque
     for i in range(nsim):
@@ -149,6 +153,8 @@ def exercise1():
         ['Amp', 'wavefrequency', 'Torque'],
         cmap='nipy_spectral'
     )
+    plt.savefig('torque.png') 
+
 
 if __name__ == '__main__':
     exercise1()

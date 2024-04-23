@@ -247,6 +247,8 @@ def plot_trajectory(controller, label=None, color=None):
     plt.axis('equal')
     plt.grid(True)
 
+    plt.savefig('Animal_head_trajectory_shu.png')
+
     plt.show()
 
 

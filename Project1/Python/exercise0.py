@@ -35,18 +35,34 @@ def exercise0(**kwargs):
     right_idx = controller.muscle_r
 
     # example plot using plot_left_right
-    plt.figure("Left & Right muscle activity")
-    plot_left_right(
-        controller.times,
-        controller.state,
-        left_idx,
-        right_idx,
-        cm="green",
-        offset=0.1)
+    # plt.figure("Left & Right muscle activity")
+    # plot_left_right(
+    #     controller.times,
+    #     controller.state,
+    #     left_idx,
+    #     right_idx,
+    #     cm="green",
+    #     offset=0.1)
+    # plt.savefig('Left & Right muscle activity.png')
+
 
     # example plot using plot_trajectory
     plt.figure("Animal head trajectory")
     plot_trajectory(controller)
+    plt.savefig('Animal_head_trajectory.png')
+
+    # plt.figure("joint positions")
+    # plot_time_histories_multiple_windows(
+    #     controller.times,
+    #     controller.joints_positions,
+    #     offset=-0.4,
+    #     colors="green",
+    #     ylabel="joint positions",
+    #     lw=1
+    # )
+    # plt.savefig('joint positions.png')
+
+
 
 
 if __name__ == '__main__':
