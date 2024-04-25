@@ -288,10 +288,13 @@ def plot_time_histories_multiple_windows_modified(
     **kwargs,
 ):
     """
-    Plot time histories of a vector of states on multiple subplots
-    time: array of times
-    state: array of states with shape (niterations,nvar)
-    kwargs: optional plotting properties (see below)
+    Modified plot_time_histories_multiple_windows to make it more readable. 
+    (Plot time histories of a vector of states on multiple subplots).
+    
+    Parameters:
+        time: array of times
+        state: array of states with shape (niterations,nvar)
+        kwargs: optional plotting properties (see below)
     """
 
     xlabel = kwargs.pop('xlabel', "Time [s]")

@@ -26,16 +26,14 @@ def exercise2(**kwargs):
     )
 
     pylog.info("Running the simulation")
-    controller = run_single(
-        all_pars
-    )
+    controller = run_single(all_pars)
 
     pylog.info("Plotting the result")
 
     left_idx = controller.muscle_l
     right_idx = controller.muscle_r
 
-    # example plot using plot_left_right
+    # Plot left and right muscle activity
     plt.figure("Left & Right muscle activity")
     plot_left_right(
         controller.times,
@@ -45,11 +43,11 @@ def exercise2(**kwargs):
         cm="green",
         offset=0.1)
 
-    # example plot using plot_trajectory
+    # Plot trajectory
     plt.figure("trajectory")
     plot_trajectory(controller)
 
-    # example plot using plot_time_histories_multiple_windows
+    # Plot joint positions
     plt.figure("joint positions")
     plot_time_histories_multiple_windows_modified(
         controller.times,
@@ -60,7 +58,7 @@ def exercise2(**kwargs):
         lw=1
     )
 
-    # example plot using plot_time_histories
+    # Plot link y-velocities
     plt.figure("link y-velocities")
     plot_time_histories(
         controller.times,
