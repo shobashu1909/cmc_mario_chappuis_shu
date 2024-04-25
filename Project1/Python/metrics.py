@@ -15,6 +15,89 @@ def sum_torques(joints_data, sim_fraction=1.0):
     nsteps_considered = round(nsteps * sim_fraction)
     return np.sum(np.abs(joints_data[-nsteps_considered:, :]))
 
+def cost_of_transport(network, sim_fraction=0.3):
+    """
+    Compute the cost of transport = torque / speed
+    """
+    mass = 0.00005022324522733332 #[kg]
+    (fspeed,lspeed) = compute_speed_cycle(network, sim_fraction=sim_fraction)
+    torque = sum_torques(network.joints_active_torques, sim_fraction=sim_fraction)
+    speed = np.sqrt(np.mean(fspeed)**2 + np.mean(lspeed)**2)
+    # compute the Distance Traveled with the speed
+    distance  = speed * network.times[-1]
+    
+    # # distance traveled 
+    # nsteps = network.links_positions.shape[0]
+    # nsteps_considered = round(nsteps * sim_fraction)
+    # links_pos_xy = network.links_positions[-nsteps_considered:, :, :2]
+    # head_pos = links_pos_xy[:, 0, :]
+    # head_displacement = head_pos[1:] - head_pos[:-1]
+    # head_displacement = np.linalg.norm(head_displacement, axis=1)
+    # distance = np.sum(head_displacement)
+    # print("distance traveled =",distance)
+
+    return torque / (distance*mass)
+
+    # nsteps = network.links_positions.shape[0]
+    # nsteps_considered = round(nsteps * sim_fraction)
+    # # links_pos_xy = network.links_positions[-nsteps_considered:, :, :2]
+    # joints_pos_xy = network.joints_positions[-nsteps_considered:, :]
+    # joints_vel_xy = network.joints_velocities[-nsteps_considered:, :]
+    # joints_torques = network.joints_active_torques[-nsteps_considered:, :]
+
+    # print("joint velocities shape =",joints_vel_xy.shape)
+    # # print("joints velocities elements =",joints_vel_xy[0,0,:])
+    # # print("joints velocities elements =",joints_vel_xy[0,1,:])
+
+    # print("joints torques shape =",joints_torques.shape)
+    # # print("joints torques elements =",joints_torques[0,:])
+    # # compute the work done by the joints
+    # work = np.sum(joints_torques * joints_vel_xy, axis=1)
+    
+
+    # # compute the distance travelled by the head
+    # print("head pos shape =",joints_pos_xy.shape)
+    # head_pos = joints_pos_xy[:, :]
+    # head_displacement = head_pos[1:] - head_pos[:-1]
+    # head_displacement = np.linalg.norm(head_displacement, axis=1)
+    # print("head displacement shape =",head_displacement.shape)
+
+    # compute the cost of transport
+    # cost = np.sum(work) / np.sum(head_displacement)
+    # return cost
+
+
+# def cost_of_transport(
+#     network,
+#     sim_fraction=1.0,
+#     joints_data = None,
+# ):
+#     """
+#     Compute the cost of transport
+#     """
+#     power = np.sum(joints_data[:, :, 1] * joints_data[:, :, 2])
+#     cost_of_transport = power / (network.pars.m * network.pars.g * network.pars.v)
+    
+    
+#     nsteps = network.links_positions.shape[0]
+#     nsteps_considered = round(nsteps * sim_fraction)
+#     links_pos_xy = network.links_positions[-nsteps_considered:, :, :2]
+
+#     # compute the distance between the head and tail
+#     head_pos = links_pos_xy[:, 0, :]
+#     tail_pos = links_pos_xy[:, -1, :]
+#     head_tail_dist = np.linalg.norm(head_pos-tail_pos, axis=1)
+
+#     # compute the total work
+#     work = np.sum(np.abs(network.joints_active_torques[-nsteps_considered:, :]))
+
+#     # compute the cost of transport (CoT=P/mgv)
+#     cost_of_transport = work / (np.sum(head_tail_dist) + 1e-6)
+
+#     print("here")
+
+#     return cost_of_transport
+
 
 def compute_speed_cycle(
     network,
@@ -333,6 +416,11 @@ def compute_mechanical(
 
     if network.mujoco_error:
         metrics = dict.fromkeys(metrics, np.nan)
+
+    # ------ Cost of transport ------
+    
+    cost = cost_of_transport(network, sim_fraction=sim_fraction)
+    metrics["cost_of_transport"] = cost
 
     return metrics
 
