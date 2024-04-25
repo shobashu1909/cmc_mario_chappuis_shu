@@ -25,16 +25,7 @@ def exercise1():
 
     pylog.info(
         "Running multiple simulations in parallel from a list of SimulationParameters")
-    # amp_values = list(np.linspace(0.5, 2, nsim))
-    # wavefrequency_values = list(np.linspace(0.5, 2, nsim))
-
-    # for i, amp in enumerate(amp_values):
-    #     print(f"amp{i} = {amp}")
-
-    # for j, wavefrequency in enumerate(wavefrequency_values):
-    #     print(f"wf{j} = {wavefrequency}")
-
-    # Now, create the pars_list using a nested list comprehension
+    
     pars_list = [
         SimulationParameters(
             simulation_i = i * nsim + j,
@@ -52,9 +43,11 @@ def exercise1():
         for j, wavefrequency in enumerate(np.linspace(0., 2, nsim))
     ]
 
-    # pylog.info("Running the simulation")
-    # controllers = run_multiple(pars_list, num_process=16)
+    # Run the simulations 
+    pylog.info("Running the simulation")
+    controllers = run_multiple(pars_list, num_process=16)
 
+    # initialize the metrics to plot
     fspeeds = np.zeros([nsim*nsim, 3])
     lspeeds = np.zeros([nsim*nsim, 3])
     fspeeds_PCA = np.zeros([nsim*nsim, 3])
@@ -62,82 +55,84 @@ def exercise1():
     torque = np.zeros([nsim*nsim, 3])
     cost_of_transport = np.zeros([nsim*nsim, 3])
 
-    # # Plot the results
-    # # fspeeds
-    # for i in range(nsim*nsim):
-    #     # load the controller
-    #     controller = load_object(log_path+"controller"+str(i))
-    #     fspeeds[i] = [
-    #         controller.pars.amplitude,
-    #         controller.pars.wave_frequency,
-    #         np.mean(controller.metrics["fspeed_cycle"])
-    #     ]
-    # # print(fspeeds)
-    # # print(controller.metrics["fspeed_cycle"])
+    # Plot the results
+    # _________________________________________________________________
+    # fspeeds
+    for i in range(nsim*nsim):
+        # load the controller
+        controller = load_object(log_path+"controller"+str(i))
+        fspeeds[i] = [
+            controller.pars.amplitude,
+            controller.pars.wave_frequency,
+            np.mean(controller.metrics["fspeed_cycle"])
+        ]
 
-    # plt.figure('Forward Speed [m/s]', figsize=[10, 10])
-    # plot_2d(
-    #     fspeeds,
-    #     ['Amp', 'wavefrequency', 'Forward Speed [m/s]'],
-    #     cmap='nipy_spectral'
-    # )
-    # plt.savefig('fspeed.png') 
+    plt.figure('Forward Speed [m/s]', figsize=[10, 10])
+    plot_2d(
+        fspeeds,
+        ['Amp', 'wavefrequency', 'Forward Speed [m/s]'],
+        cmap='nipy_spectral'
+    )
+    plt.savefig('fspeed.png') 
 
-    # # fspeeds_PCA
-    # for i in range(nsim*nsim):
-    #     # load the controller
-    #     controller = load_object(log_path+"controller"+str(i))
-    #     fspeeds_PCA[i] = [
-    #         controller.pars.amplitude,
-    #         controller.pars.wave_frequency,
-    #         np.mean(controller.metrics["fspeed_PCA"])
-    #     ]
+    # _________________________________________________________________
+    # fspeeds_PCA
+    for i in range(nsim*nsim):
+        # load the controller
+        controller = load_object(log_path+"controller"+str(i))
+        fspeeds_PCA[i] = [
+            controller.pars.amplitude,
+            controller.pars.wave_frequency,
+            np.mean(controller.metrics["fspeed_PCA"])
+        ]
     
-    # plt.figure('Forward Speed PCA[m/s] ', figsize=[10, 10])
-    # plot_2d(
-    #     fspeeds_PCA,
-    #     ['Amp', 'wavefrequency', 'Forward Speed PCA[m/s]'],
-    #     cmap='nipy_spectral'
-    # )
+    plt.figure('Forward Speed PCA[m/s] ', figsize=[10, 10])
+    plot_2d(
+        fspeeds_PCA,
+        ['Amp', 'wavefrequency', 'Forward Speed PCA[m/s]'],
+        cmap='nipy_spectral'
+    )
     # plt.savefig('fspeed_PCA.png')
 
-    # # lspeeds
-    # for i in range(nsim*nsim):
-    #     # load the controller
-    #     controller = load_object(log_path+"controller"+str(i))
-    #     lspeeds[i] = [
-    #         controller.pars.amplitude,
-    #         controller.pars.wave_frequency,
-    #         np.mean(controller.metrics["lspeed_cycle"])
-    #     ]
+    # _________________________________________________________________
+    # lspeeds
+    for i in range(nsim*nsim):
+        # load the controller
+        controller = load_object(log_path+"controller"+str(i))
+        lspeeds[i] = [
+            controller.pars.amplitude,
+            controller.pars.wave_frequency,
+            np.mean(controller.metrics["lspeed_cycle"])
+        ]
     
-    # plt.figure('L Speed[m/s]', figsize=[10, 10])
-    # plot_2d(
-    #     lspeeds,
-    #     ['Amp', 'wavefrequency', 'Lateral Speed[m/s]'],
-    #     cmap='nipy_spectral'
-    # )
+    plt.figure('L Speed[m/s]', figsize=[10, 10])
+    plot_2d(
+        lspeeds,
+        ['Amp', 'wavefrequency', 'Lateral Speed[m/s]'],
+        cmap='nipy_spectral'
+    )
     # plt.savefig('lspeed.png')
 
-    # # lspeeds_PCA
-    # for i in range(nsim*nsim):
-    #     # load the controller
-    #     controller = load_object(log_path+"controller"+str(i))
-    #     lspeeds_PCA[i] = [
-    #         controller.pars.amplitude,
-    #         controller.pars.wave_frequency,
-    #         np.mean(controller.metrics["lspeed_PCA"])
-    #     ]
+    # _________________________________________________________________
+    # lspeeds_PCA
+    for i in range(nsim*nsim):
+        # load the controller
+        controller = load_object(log_path+"controller"+str(i))
+        lspeeds_PCA[i] = [
+            controller.pars.amplitude,
+            controller.pars.wave_frequency,
+            np.mean(controller.metrics["lspeed_PCA"])
+        ]
     
-    # plt.figure('L Speed PCA[m/s]', figsize=[10, 10])
-    # plot_2d(
-    #     lspeeds_PCA,
-    #     ['Amp', 'wavefrequency', 'Lateral Speed PCA[m/s]'],
-    #     cmap='nipy_spectral'
-    # )
+    plt.figure('L Speed PCA[m/s]', figsize=[10, 10])
+    plot_2d(
+        lspeeds_PCA,
+        ['Amp', 'wavefrequency', 'Lateral Speed PCA[m/s]'],
+        cmap='nipy_spectral'
+    )
     # plt.savefig('lspeed_PCA.png')
 
-
+    # _________________________________________________________________
     # torque
     for i in range(nsim*nsim):
         # load the controller
@@ -154,8 +149,9 @@ def exercise1():
         ['Amp', 'wavefrequency', 'Torque [J=N.m]'],
         cmap='nipy_spectral'
     )
-    plt.savefig('torque_unit.png') 
+    # plt.savefig('torque_unit.png') 
 
+    # _________________________________________________________________
     # cost_of_transport
     for i in range(nsim*nsim):
         # load the controller
@@ -172,7 +168,8 @@ def exercise1():
         ['Amp', 'wavefrequency', 'Cost of Transport [no unit]'],
         cmap='nipy_spectral'
     )
-    plt.savefig('cost_of_transport_torque&speed_distance.png')
+    # plt.savefig('cost_of_transport_torque&speed_distance.png')
+    # _________________________________________________________________
 
 
 if __name__ == '__main__':
