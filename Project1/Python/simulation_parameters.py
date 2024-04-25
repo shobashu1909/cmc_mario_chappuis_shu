@@ -31,7 +31,7 @@ class SimulationParameters:
         self.frequency = 2.0
         self.wave_frequency = 0.5
         self.square = False
-        self.steepness = 5
+        self.steepness = 10000
 
         # gui/recording parameters
         self.headless = True  # For headless mode (No GUI, could be faster)

@@ -80,6 +80,7 @@ class WaveController:
         
         return 2 * (1 / (1 + np.exp(-steepness * signal)) - 0.5)
 
+
     def calculate_MLi_square(self, t, A, f, epsilon, n_joints, i, steepness):
         """
         Calculate left muscle activation (square wave).
