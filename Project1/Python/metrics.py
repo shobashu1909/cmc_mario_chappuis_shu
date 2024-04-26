@@ -15,6 +15,19 @@ def sum_torques(joints_data, sim_fraction=1.0):
     nsteps_considered = round(nsteps * sim_fraction)
     return np.sum(np.abs(joints_data[-nsteps_considered:, :]))
 
+def cost_of_transport(network, sim_fraction=0.3):
+    """
+    Compute the cost of transport = torque / speed
+    """
+    mass = 0.00005022324522733332 #[kg]
+    (fspeed,lspeed) = compute_speed_cycle(network, sim_fraction=sim_fraction)
+    torque = sum_torques(network.joints_active_torques, sim_fraction=sim_fraction)
+    speed = np.sqrt(np.mean(fspeed)**2 + np.mean(lspeed)**2)
+
+    # compute the Distance Traveled with the speed
+    distance  = speed * network.times[-1]
+
+    return torque / (distance*mass)
 
 def compute_speed_cycle(
     network,
@@ -333,6 +346,11 @@ def compute_mechanical(
 
     if network.mujoco_error:
         metrics = dict.fromkeys(metrics, np.nan)
+
+    # ------ Cost of transport ------
+    
+    cost = cost_of_transport(network, sim_fraction=sim_fraction)
+    metrics["cost_of_transport"] = cost
 
     return metrics
 
