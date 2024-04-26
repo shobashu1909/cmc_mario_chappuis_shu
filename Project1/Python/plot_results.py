@@ -22,10 +22,16 @@ def plot_exercise_multiple(n_simulations, logdir):
         # load controller
         controller = load_object(logdir+"controller"+str(i))
         fspeeds[i] = [
-            controller.pars.amp,
-            controller.pars.wavefrequency,
+            controller.pars.amplitude,
+            controller.pars.wave_frequency,
             np.mean(controller.metrics["fspeed_cycle"])
         ]
+        
+        print("for controller" + str(i))
+        print(fspeeds)
+        print(controller.metrics["fspeed_cycle"])
+        print(np.mean(controller.metrics["fspeed_cycle"]))
+
 
     plt.figure('exercise_multiple', figsize=[10, 10])
     plot_2d(
@@ -56,5 +62,4 @@ def main(plot=True):
 
 if __name__ == '__main__':
     main(plot=True)
-
 
