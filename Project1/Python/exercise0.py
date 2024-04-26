@@ -16,12 +16,11 @@ def exercise0(**kwargs):
     os.makedirs(log_path, exist_ok=True)
 
     all_pars = SimulationParameters(
-        n_iterations=6001,
+        n_iterations=10001,
         controller="sine",
         log_path=log_path,
         compute_metrics=3,
         return_network=True,
-        video_record = True,
         **kwargs
     )
 
@@ -35,7 +34,7 @@ def exercise0(**kwargs):
     left_idx = controller.muscle_l
     right_idx = controller.muscle_r
 
-    # example plot using plot_left_right
+    # Plot muscle activity
     plt.figure("Left & Right muscle activity")
     plot_left_right(
         controller.times,
@@ -45,10 +44,11 @@ def exercise0(**kwargs):
         cm="green",
         offset=0.1)
 
-    # example plot using plot_trajectory
+    # Plot trajectory
     plt.figure("Animal head trajectory")
     plot_trajectory(controller)
 
+    # Plot joint positions
     plt.figure("joint positions")
     plot_time_histories_multiple_windows_modified(
         controller.times,

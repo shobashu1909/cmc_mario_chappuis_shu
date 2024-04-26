@@ -29,6 +29,7 @@ def exercise1():
     pars_list = [
         SimulationParameters(
             simulation_i = i * nsim + j,
+            frequency = 1.0,
             n_iterations = 10001,
             log_path = log_path,
             video_record = False,
