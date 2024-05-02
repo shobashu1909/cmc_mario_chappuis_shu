@@ -281,3 +281,75 @@ def save_figures(**kwargs):
     for name in figures:
         save_figure(name, extensions=kwargs.pop('extensions', ['pdf']))
 
+
+def plot_time_histories_multiple_windows_modified(
+    time: np.array,
+    state: np.array,
+    **kwargs,
+):
+    """
+    Modified plot_time_histories_multiple_windows to make it more readable. 
+    (Plot time histories of a vector of states on multiple subplots).
+    
+    Parameters:
+        time: array of times
+        state: array of states with shape (niterations,nvar)
+        kwargs: optional plotting properties (see below)
+    """
+
+    xlabel = kwargs.pop('xlabel', "Time [s]")
+    ylabel = kwargs.pop('ylabel', "Activity [-]")
+    title = kwargs.pop('title', None)
+    labels = kwargs.pop('labels', None)
+    colors = kwargs.pop('colors', None)
+    xlim = kwargs.pop('xlim', [0, time[-1]])
+    ylim = kwargs.pop('ylim', None)
+    savepath = kwargs.pop('savepath', None)
+    lw = kwargs.pop('lw', 1.0)
+    xticks = kwargs.pop('xticks', None)
+    yticks = kwargs.pop('yticks', None)
+    xticks_labels = kwargs.pop('xticks_labels', None)
+    yticks_labels = kwargs.pop('xticks_labels', None)
+    closefig = kwargs.pop('closefig', True)
+
+    if isinstance(colors, list) and len(colors) == state.shape[1]:
+        colors = colors
+    elif not isinstance(colors, list):
+        colors = [colors for _ in range(state.shape[1])]
+    else:
+        raise Exception("Color list not a vecotor of the correct size!")
+
+    n = state.shape[1]
+
+    plt.rc('xtick', labelsize=8)
+    plt.rc('ytick', labelsize=8)
+
+    if title:
+        plt.figure(title)
+        # plt.ylabel("Joints position")
+    for (idx, vector) in enumerate(state.transpose()):
+        if not labels:
+            label = None
+        else:
+            label = labels[idx]
+
+        if idx == int(n/2):
+            plt.ylabel(ylabel)
+        plt.subplot(n, 1, idx+1)
+        plt.plot(time, vector, label=label, color=colors[idx], linewidth=lw)
+ 
+        plt.xlim(xlim)
+        plt.ylim(ylim)
+    if labels:
+        plt.legend()
+    plt.xlabel(xlabel)
+    plt.subplots_adjust(hspace=0.8)
+    plt.grid(False)
+    if xticks:
+        plt.xticks(xticks, labels=xticks_labels)
+    if yticks:
+        plt.yticks(yticks, labels=yticks_labels, labelsize=1)
+    if savepath:
+        plt.savefig(savepath)
+        if closefig:
+            plt.close()
