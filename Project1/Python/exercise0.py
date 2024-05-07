@@ -4,7 +4,11 @@ from simulation_parameters import SimulationParameters
 import matplotlib.pyplot as plt
 import os
 import farms_pylog as pylog
+<<<<<<< HEAD
 from plotting_common import plot_left_right, plot_trajectory, plot_time_histories, plot_time_histories_multiple_windows
+=======
+from plotting_common import plot_left_right, plot_trajectory, plot_time_histories, plot_time_histories_multiple_windows_modified
+>>>>>>> 9719d05d174e77c5af79c175692796a80cf19859
 
 
 
@@ -34,7 +38,11 @@ def exercise0(**kwargs):
     left_idx = controller.muscle_l
     right_idx = controller.muscle_r
 
+<<<<<<< HEAD
     # example plot using plot_left_right
+=======
+    # Plot muscle activity
+>>>>>>> 9719d05d174e77c5af79c175692796a80cf19859
     plt.figure("Left & Right muscle activity")
     plot_left_right(
         controller.times,
@@ -43,6 +51,7 @@ def exercise0(**kwargs):
         right_idx,
         cm="green",
         offset=0.1)
+<<<<<<< HEAD
     # plt.savefig('Left & Right muscle activity.png')
 
 
@@ -52,6 +61,16 @@ def exercise0(**kwargs):
 
     plt.figure("joint positions")
     plot_time_histories_multiple_windows(
+=======
+
+    # Plot trajectory
+    plt.figure("Animal head trajectory")
+    plot_trajectory(controller)
+
+    # Plot joint positions
+    plt.figure("joint positions")
+    plot_time_histories_multiple_windows_modified(
+>>>>>>> 9719d05d174e77c5af79c175692796a80cf19859
         controller.times,
         controller.joints_positions,
         offset=-0.4,
@@ -59,9 +78,12 @@ def exercise0(**kwargs):
         ylabel="joint positions",
         lw=1
     )
+<<<<<<< HEAD
     # plt.savefig('joint positions.png')
 
 
+=======
+>>>>>>> 9719d05d174e77c5af79c175692796a80cf19859
 
 
 if __name__ == '__main__':

@@ -27,9 +27,15 @@ class SimulationParameters:
         self.n_iterations = 10001  # number of integration time steps
         
         # Parameters for the wave controller
+<<<<<<< HEAD
         self.amplitude = 0.5 # amplitude of the sine wave [0;2]
         self.frequency = 1 # frequency of the sine wave [1;5]
         self.wave_frequency = 0.5 # wave frequency of the sine wave [0;2]
+=======
+        self.amplitude = 0.5
+        self.frequency = 2.0
+        self.wave_frequency = 0.5
+>>>>>>> 9719d05d174e77c5af79c175692796a80cf19859
         self.square = False
         self.steepness = 5
 

@@ -17,6 +17,8 @@ class WaveController:
             pars.timestep,
             pars.n_iterations)
         self.n_joints = pars.n_joints
+        self.square = pars.square
+        self.steepness = pars.steepness
 
         self.amplitude = pars.amplitude
         self.frequency = pars.frequency
@@ -37,11 +39,43 @@ class WaveController:
         self.muscle_r = self.muscle_l+1
     
     def calculate_MLi(self, t, A, f, epsilon, n_joints, i):
+        """
+        Calculate left muscle activation (sine wave).
+
+        Parameters:
+            t (ndarray): Time
+            A (float): Amplitude
+            f (float): Frequency
+            epsilon (float): Wavefrequency
+            n_joints (int): Number of joints
+            i (int): Joint number
+        
+        Returns:
+            ndarray: Left muscle activation
+        """
         return 0.5 + A/2 * np.sin((2*np.pi * (f*t - epsilon*i/n_joints)))
 
     def calculate_MRi(self, t, A, f, epsilon, n_joints, i):
+        """
+        Calculate right muscle activation (sine wave).
+
+        Parameters:
+            t (ndarray): Time
+            A (float): Amplitude
+            f (float): Frequency
+            epsilon (float): Wavefrequency
+            n_joints (int): Number of joints
+            i (int): Joint number
+        
+        Returns:
+            ndarray: Right muscle activation
+        """
         return 0.5 - A/2 * np.sin((2*np.pi * (f*t - epsilon*i/n_joints)))
 
+<<<<<<< HEAD
+=======
+    
+>>>>>>> 9719d05d174e77c5af79c175692796a80cf19859
     def gain_function(self, signal, steepness):
         """
         Gain function to modify the signal to resemble a square wave.
@@ -54,6 +88,7 @@ class WaveController:
             ndarray: Modified signal.
         """
         
+<<<<<<< HEAD
         return 2 / (1 + np.exp(-steepness * (signal))) 
     
     def calculate_MLi_square(self, t, A, f, epsilon, n_joints, i, steepness):
@@ -70,6 +105,55 @@ class WaveController:
     def S_sigmoid(self, x, steepness):
         return 1/(1+np.exp(-steepness*(x-0.5)))
 
+=======
+        return 2 * (1 / (1 + np.exp(-steepness * signal)) - 0.5)
+
+
+    def calculate_MLi_square(self, t, A, f, epsilon, n_joints, i, steepness):
+        """
+        Calculate left muscle activation (square wave).
+
+        Parameters:
+            t (ndarray): Time
+            A (float): Amplitude
+            f (float): Frequency
+            epsilon (float): Wavefrequency
+            n_joints (int): Number of joints
+            i (int): Joint number
+            steepness: Slope of the gain function
+        
+        Returns:
+            ndarray: Left muscle activation (square)
+        """
+
+        signal = self.gain_function(np.sin((2*np.pi * (f*t - epsilon*i/n_joints))), steepness)
+
+        return 0.5 + A/2 * signal
+        
+
+    def calculate_MRi_square(self, t, A, f, epsilon, n_joints, i, steepness):
+        """
+        Calculate right muscle activation (square wave).
+
+        Parameters:
+            t (ndarray): Time
+            A (float): Amplitude
+            f (float): Frequency
+            epsilon (float): Wavefrequency
+            n_joints (int): Number of joints
+            i (int): Joint number
+            steepness: Slope of the gain function
+        
+        Returns:
+            ndarray: Right muscle activation (square)
+        """
+
+        signal = self.gain_function(np.sin((2*np.pi * (f*t - epsilon*i/n_joints))), steepness)
+
+        return 0.5 - A/2 * signal
+    
+    
+>>>>>>> 9719d05d174e77c5af79c175692796a80cf19859
     def step(self, iteration, time, timestep, pos=None):
         """
         Step function. This function passes the activation functions of the muscle model
@@ -87,12 +171,23 @@ class WaveController:
         In addition to returning the activation functions, store
         them in self.state for later use offline
         """
+<<<<<<< HEAD
         A = self.amplitude
         f = self.frequency
         epsilon = self.wave_frequency
+=======
+
+        # initialize parameters
+        A = self.pars.amplitude
+        f = self.pars.frequency
+        epsilon = self.pars.wave_frequency
+>>>>>>> 9719d05d174e77c5af79c175692796a80cf19859
         n_joints = self.n_joints
         activation_functions = np.zeros(n_joints*2)
+        square = self.square
+        steepness = self.steepness
 
+<<<<<<< HEAD
         # print("Amplitude: ", A)
         # print("Wavefrequency: ", epsilon)
 
@@ -115,6 +210,27 @@ class WaveController:
                 activation_functions[i] = self.calculate_MLi(time, A, f, epsilon, n_joints, i)
             else:
                 activation_functions[i] = self.calculate_MRi(time, A, f, epsilon, n_joints, i)
+=======
+        # sine wave controller
+        if not square:
+            for i in range(n_joints*2):
+                if i%2 == 0:
+                    # left muscle
+                    activation_functions[i] = self.calculate_MLi(time, A, f, epsilon, n_joints, i)
+                else:
+                    # right muscle
+                    activation_functions[i] = self.calculate_MRi(time, A, f, epsilon, n_joints, i)
+        
+        # square wave controller
+        if square:
+            for i in range(n_joints*2):
+                if i%2 == 0:
+                    # left muscle
+                    activation_functions[i] = self.calculate_MLi_square(time, A, f, epsilon, n_joints, i, steepness)
+                else:
+                    # right muscle
+                    activation_functions[i] = self.calculate_MRi_square(time, A, f, epsilon, n_joints, i, steepness)
+>>>>>>> 9719d05d174e77c5af79c175692796a80cf19859
 
         self.state[iteration] = activation_functions
 
