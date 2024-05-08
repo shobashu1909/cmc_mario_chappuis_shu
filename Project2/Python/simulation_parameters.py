@@ -70,6 +70,7 @@ class SimulationParameters:
         self.b = 10  # adaptation strength
         self.gamma = 0.5  # adaptation rate
         self.w_inh = 2  # inhibitory strength
+        self.g_in  = 2 # CPG coupling strength
 
         # stretch pars
         self.w_stretch = 0  # feedback strength

@@ -135,6 +135,9 @@ class FiringRateController:
             2 *
             self.n_muscle_cells)  # here you have to final active muscle equations for the 10 joints
 
+    def F(x):
+        return np.sqrt(max(x, 0))
+    
     def ode_rhs(self,  _time, state, pos=None):
         """Network_ODE
         You should implement here the right hand side of the system of equations
@@ -149,5 +152,24 @@ class FiringRateController:
         dstate: <np.array>
             Returns derivative of state
         """
+
+        tau = self.pars.tau
+        tau_a = self.pars.taua
+        gamma = self.pars.gamma
+        I = self.pars.I
+        b = self.pars.b
+        g_in = self.pars.g_in
+        W_in = self.pars.W_in
+
+        r_L, a_L, r_R, a_R = np.split(state, 4)
+
+        drdt_L = 1/tau * (-r_L + self.F(I - b*a_L - g_in*W_in.dot(r_R)))
+        drdt_R = 1/tau * (-r_R + self.F(I - b*a_R - g_in*W_in.dot(r_L)))
+        
+        dadt_L = 1/tau_a * (-a_L + gamma*r_L)
+        dadt_R =  1/tau_a * (-a_R + gamma*r_R)
+
+        self.dstate = np.concatenate(drdt_L, dadt_L, drdt_R, dadt_R)
+
         return self.dstate
 
