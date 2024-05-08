@@ -71,6 +71,10 @@ class SimulationParameters:
         self.gamma = 0.5  # adaptation rate
         self.w_inh = 2  # inhibitory strength
 
+        # add by clara 
+        self.g_in  = 2 # CPG coupling strength
+        self.g_ss = 0 # strectch to CPG coupling strength
+
         # stretch pars
         self.w_stretch = 0  # feedback strength
         self.n_asc_str = 10  # number of ascending stretch connections

@@ -131,10 +131,90 @@ class FiringRateController:
         even indexes (0,2,4,...) = left muscle activations
         odd indexes (1,3,5,...) = right muscle activations
         """
-        return np.zeros(
-            2 *
-            self.n_muscle_cells)  # here you have to final active muscle equations for the 10 joints
+        #_______________________________________________________________________________________
+        # To complete
+        muscles = np.zeros(2*self.n_muscle_cells)
 
+        #_______________________________________________________________________________________
+
+        
+        return muscles # np.zeros(2 * self.n_muscle_cells)  # here you have to final active muscle equations for the 10 joints
+    
+    #_______________________________________________________________________________________
+    # Add by Clara
+    def F(x):
+        return np.sqrt(max(x, 0))
+    #_______________________________________________________________________________________
+    # Add by Shu
+    def F_sqrt(self, x):
+        return np.sqrt(np.maximum(x,0))
+
+    def F_max(self, x):
+        return np.maximum(x,0)
+
+    def F_sigmoid(self, x):
+        return 1/(1+np.exp(-self.pars.lam*(x-self.pars.theta)))
+    
+    def connectivity_matrix(self, n_neurons, n_asc, n_desc):
+        """
+        Implement here the connectivity matrix
+        Parameters
+        ----------
+        n_neurons: <int>
+            Number of neurons
+        n_asc: <int>
+            Number of ascending connections
+        n_desc: <int>
+            Number of descending connections
+        Returns
+        -------
+        W: <np.array>
+            Connectivity matrix "CPG to CPG" or "stetch to CPG"
+        """
+        #_______________________________________________________________________________________
+        # To complete
+        W = np.zeros((n_neurons, n_neurons))
+        
+        for i in range(n_neurons):
+            for j in range(n_neurons):
+                if i<=j and j-i<=n_desc:
+                    W[i,j] = 1/(j-i+1)
+                elif i>j and i-j<=n_asc:
+                    W[i,j] = 1/(i-j+1)
+                else: # otherwise
+                    W[i,j] = 0
+        #_______________________________________________________________________________________
+        return W
+    
+    def connectivity_matrix_CPGtoMuscle(self, n_neurons, n_muscle_cells):
+        """
+        Implement here the connectivity matrix
+        Parameters
+        ----------
+        n_neurons: <int>
+            Number of neurons
+        n_muscle_cells: <int>
+            Number of muscle cells
+        Returns
+        -------
+        W_mc: <np.array>
+            Connectivity matrix CPG to muscle
+        """
+        #_______________________________________________________________________________________
+        # To complete
+        W_mc = np.zeros((n_muscle_cells, n_neurons))
+        
+        for i in range(n_muscle_cells):
+            for j in range(n_neurons):
+                if n_muscle_cells*i <= j <= n_muscle_cells*(i+1)-1:
+                    W_mc[i,j] = 1
+                else:
+                    W_mc[i,j] = 0
+        #_______________________________________________________________________________________
+        return W_mc
+
+    #_______________________________________________________________________________________
+    
     def ode_rhs(self,  _time, state, pos=None):
         """Network_ODE
         You should implement here the right hand side of the system of equations
@@ -149,5 +229,44 @@ class FiringRateController:
         dstate: <np.array>
             Returns derivative of state
         """
+        #_______________________________________________________________________________________
+        # Add by Clara
+        tau = self.pars.tau
+        tau_a = self.pars.taua
+        gamma = self.pars.gamma
+        I = self.pars.I
+        b = self.pars.b
+        g_in = self.pars.g_in
+        g_ss = self.pars.g_ss
+
+        # W_in = self.pars.W_in # is it the inhibitory strength?
+        W_in = self.connectivity_matrix(self.n_neurons, 1, 2)
+        W_ss = self.connectivity_matrix(self.n_neurons, 10,0)
+        # W_mc = self.connectivity_matrix_CPGtoMuscle(self.n_neurons, self.n_muscle_cells)
+
+        # r_L, a_L, r_R, a_R = np.split(state, 4)
+        
+        # vector of left neuron activities
+        r_L = state[0:self.n_neurons]
+        a_L = state[self.n_neurons:2*self.n_neurons]
+
+        # vector of right neuron activities
+        r_R = state[2*self.n_neurons:3*self.n_neurons]
+        a_R = state[3*self.n_neurons:4*self.n_neurons]
+
+        print(state.shape)
+
+        drdt_L = 1/tau * (-r_L + self.F_sqrt(I - b*a_L - g_in*W_in.dot(r_R)))
+        drdt_R = 1/tau * (-r_R + self.F_sqrt(I - b*a_R - g_in*W_in.dot(r_L)))
+        
+        # idea shu
+        # drdt_R = 1/tau * (-r_R + self.F_sqrt(I - b*a_R - g_in*W_in.dot(r_L)-g_ss*W_ss.dot(s_L)))
+
+        dadt_L = 1/tau_a * (-a_L + gamma*r_L)
+        dadt_R =  1/tau_a * (-a_R + gamma*r_R)
+
+        self.dstate = np.concatenate((drdt_L, dadt_L, drdt_R, dadt_R))
+        #_______________________________________________________________________________________
+
         return self.dstate
 

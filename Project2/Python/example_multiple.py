@@ -5,6 +5,8 @@ import os
 import numpy as np
 import farms_pylog as pylog
 
+# add by shu
+from plot_results import plot_exercise_multiple
 
 def exercise_multiple():
 
@@ -32,6 +34,13 @@ def exercise_multiple():
     ]
 
     run_multiple(pars_list, num_process=8)
+
+    # plot the results
+    pylog.info("Plotting the results")
+
+    # plot_exercise_multiple(nsim**2, log_path)
+
+
 
 
 if __name__ == '__main__':
