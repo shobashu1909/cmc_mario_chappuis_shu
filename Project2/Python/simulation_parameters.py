@@ -72,6 +72,11 @@ class SimulationParameters:
         self.w_inh = 2  # inhibitory strength
         self.g_in  = 2 # CPG coupling strength
 
+        ###########add by clara
+        self.taua_m = 0.005 # muscle cell activation time scale
+        self.taud_m = 0.02 # muscle cell inactivation time scale
+        self.g_mc = 0.3
+
         # stretch pars
         self.w_stretch = 0  # feedback strength
         self.n_asc_str = 10  # number of ascending stretch connections
