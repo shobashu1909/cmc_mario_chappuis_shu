@@ -76,6 +76,7 @@ class SimulationParameters:
         self.taua_m = 0.005 # muscle cell activation time scale
         self.taud_m = 0.02 # muscle cell inactivation time scale
         self.g_mc = 0.3
+        self.n_mc = 5
 
         # stretch pars
         self.w_stretch = 0  # feedback strength

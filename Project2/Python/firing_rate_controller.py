@@ -188,7 +188,7 @@ class FiringRateController:
         #_______________________________________________________________________________________
         return W
     
-    def connectivity_matrix_CPGtoMuscle(self, n_neurons, n_muscle_cells):
+    def connectivity_matrix_CPGtoMuscle(self, n_neurons, n_muscle_cells, n_mc):
         """
         Implement here the connectivity matrix
         Parameters
@@ -208,7 +208,7 @@ class FiringRateController:
         
         for i in range(n_muscle_cells):
             for j in range(n_neurons):
-                if n_muscle_cells*i <= j <= n_muscle_cells*(i+1)-1:
+                if n_mc*i <= j <= n_mc*(i+1)-1:
                     W_mc[i,j] = 1
                 else:
                     W_mc[i,j] = 0
@@ -247,7 +247,7 @@ class FiringRateController:
 
         W_in = self.connectivity_matrix(self.n_neurons, 1, 2)
         # W_ss = self.connectivity_matrix(self.n_neurons, 10, 0)
-        W_mc = self.connectivity_matrix_CPGtoMuscle(self.n_neurons, self.n_muscle_cells)
+        W_mc = self.connectivity_matrix_CPGtoMuscle(self.n_neurons, self.n_muscle_cells, self.pars.n_mc)
 
         self.r_L_ind = 2*np.arange(0, self.n_neurons)
         self.r_R_ind = self.r_L_ind + 1
@@ -263,10 +263,6 @@ class FiringRateController:
         self.m_L = state[self.m_L_ind]
         self.m_R = state[self.m_R_ind]
 
-        print("a_L= ", self.a_L)
-        print("a_R= ", self.a_R)
-     
-        
         # vector of left neuron activities
         # r_L = state[0:self.n_neurons]
         # r_R = state[self.n_neurons:2*self.n_neurons]
@@ -287,13 +283,15 @@ class FiringRateController:
         dmdt_L = g_mc * W_mc.dot(self.r_L) * (1 - self.m_L)/taua_m - self.m_L/taud_m
         dmdt_R = g_mc * W_mc.dot(self.r_R) * (1 - self.m_R)/taua_m - self.m_R/taud_m
 
-        dstate_0 = np.zeros(320)
+        dstate_0 = np.zeros(state.shape)
         dstate_0[self.r_L_ind] = drdt_L
         dstate_0[self.r_R_ind] = drdt_R
         dstate_0[self.a_L_ind] = dadt_L
         dstate_0[self.a_R_ind] = dadt_R
         dstate_0[self.m_L_ind] = dmdt_L
         dstate_0[self.m_R_ind] = dmdt_R
+
+        print(dstate_0)
 
         self.dstate = dstate_0
         #_______________________________________________________________________________________
