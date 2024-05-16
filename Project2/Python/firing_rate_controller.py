@@ -134,7 +134,12 @@ class FiringRateController:
         #_______________________________________________________________________________________
         # To complete
         muscles = np.zeros(2*self.n_muscle_cells)
+        # i_L = np.arange(0, 19, 2)
+        # i_R = np.arange(1, 20, 2)
+        # muscles[i_L] = self.m_L
+        # muscles[i_R] = self.m_R
 
+        muscles = self.pars.act_strength*self.state[iteration][self.all_muscles]
         #_______________________________________________________________________________________
 
         
@@ -160,11 +165,11 @@ class FiringRateController:
         Implement here the connectivity matrix
         Parameters
         ----------
-        n_neurons: <int>
+        n_neurons: <int> 50
             Number of neurons
-        n_asc: <int>
+        n_asc: <int> 1
             Number of ascending connections
-        n_desc: <int>
+        n_desc: <int> 2
             Number of descending connections
         Returns
         -------
@@ -186,15 +191,17 @@ class FiringRateController:
         #_______________________________________________________________________________________
         return W
     
-    def connectivity_matrix_CPGtoMuscle(self, n_neurons, n_muscle_cells):
+    def connectivity_matrix_CPGtoMuscle(self, n_neurons, n_muscle_cells, n_mc):
         """
         Implement here the connectivity matrix
         Parameters
         ----------
-        n_neurons: <int>
+        n_neurons: <int> 50 
             Number of neurons
-        n_muscle_cells: <int>
+        n_muscle_cells: <int> 10 
             Number of muscle cells
+        n_mc: <int> 5
+            Number of CPG to muscle connections
         Returns
         -------
         W_mc: <np.array>
@@ -206,7 +213,7 @@ class FiringRateController:
         
         for i in range(n_muscle_cells):
             for j in range(n_neurons):
-                if n_muscle_cells*i <= j <= n_muscle_cells*(i+1)-1:
+                if n_mc*i <= j <= n_mc*(i+1)-1:
                     W_mc[i,j] = 1
                 else:
                     W_mc[i,j] = 0
@@ -229,44 +236,152 @@ class FiringRateController:
         dstate: <np.array>
             Returns derivative of state
         """
-        #_______________________________________________________________________________________
-        # Add by Clara
         tau = self.pars.tau
         tau_a = self.pars.taua
         gamma = self.pars.gamma
         I = self.pars.I
         b = self.pars.b
         g_in = self.pars.g_in
-        g_ss = self.pars.g_ss
-
-        # W_in = self.pars.W_in # is it the inhibitory strength?
-        W_in = self.connectivity_matrix(self.n_neurons, 1, 2)
-        W_ss = self.connectivity_matrix(self.n_neurons, 10,0)
-        # W_mc = self.connectivity_matrix_CPGtoMuscle(self.n_neurons, self.n_muscle_cells)
-
-        # r_L, a_L, r_R, a_R = np.split(state, 4)
+        # g_ss = self.pars.g_ss
+        taua_m = self.pars.taua_m
+        taud_m = self.pars.taud_m
+        g_mc = self.pars.g_mc
         
-        # vector of left neuron activities
-        r_L = state[0:self.n_neurons]
-        a_L = state[self.n_neurons:2*self.n_neurons]
+        W_in = self.connectivity_matrix(self.n_neurons, self.pars.n_asc, self.pars.n_desc)
+        W_mc = self.connectivity_matrix_CPGtoMuscle(self.n_neurons, self.n_muscle_cells//2, self.pars.n_mc)
 
-        # vector of right neuron activities
-        r_R = state[2*self.n_neurons:3*self.n_neurons]
-        a_R = state[3*self.n_neurons:4*self.n_neurons]
+        # with index i = 0,...,49, each left unit can be described by a pair of variables (r_L[i], a_L[i]) for the right units,
+        # where r_L[i] is the firing rate of the left CPG neuron j and a_L[i] represents the firing rate adaptation of the left CPG neuron j
+        # the same applies to the right units
 
-        print(state.shape)
+        # implement here the right hand side of the system of equations
+        #_______________________________________________________________________________________
+        # To complete
+        # r_L = state[0:self.n_neurons]
+        # a_L = state[self.n_neurons:2*self.n_neurons]
+        # r_R = state[2*self.n_neurons:3*self.n_neurons]
+        # a_R = state[3*self.n_neurons:4*self.n_neurons]
+        # m_L = state[4*self.n_neurons:4*self.n_neurons+self.n_muscle_cells]
+        # m_R = state[4*self.n_neurons+self.n_muscle_cells:4*self.n_neurons+2*self.n_muscle_cells]
 
+        
+        # self.r_L_ind = 2*np.arange(0, self.n_neurons)
+        # self.r_R_ind = self.r_L_ind + 1
+        # self.a_L_ind = 2*np.arange(self.n_neurons, self.n_neurons*2)
+        # self.a_R_ind = self.a_L_ind + 1
+        # self.m_L_ind = 4*self.n_neurons + 2*np.arange(0, self.n_muscle_cells)
+        # self.m_R_ind = self.m_L_ind + 1
+    
+        # self.r_L_ind = np.arange(0, self.n_neurons) #50
+        # self.r_R_ind = np.arange(0, self.n_neurons) #50
+        # self.a_L_ind = np.arange(0, self.n_neurons) #50
+        # self.a_R_ind = np.arange(0, self.n_neurons) #50
+        # self.m_L_ind = np.arange(0, self.n_muscle_cells) #10
+        # self.m_R_ind = np.arange(0, self.n_muscle_cells) #10
+
+        # self.r_L = state[self.r_L_ind]
+        # self.r_R = state[self.r_R_ind]
+        # self.a_L = state[self.a_L_ind]
+        # self.a_R = state[self.a_R_ind]
+        # self.m_L = state[self.m_L_ind]
+        # self.m_R = state[self.m_R_ind]
+
+        # drdt_L = 1/tau * (-self.r_L + self.F_sqrt(I - b*self.a_L - g_in*W_in.dot(self.r_R)))
+        # drdt_R = 1/tau * (-self.r_R + self.F_sqrt(I - b*self.a_R - g_in*W_in.dot(self.r_L)))
+
+        # dadt_L = 1/tau_a * (-self.a_L + gamma*self.r_L)
+        # dadt_R =  1/tau_a * (-self.a_R + gamma*self.r_R)
+
+        # dmdt_L = g_mc * W_mc.dot(self.r_L) * (1 - self.m_L)/taua_m - self.m_L/taud_m
+        # dmdt_R = g_mc * W_mc.dot(self.r_R) * (1 - self.m_R)/taua_m - self.m_R/taud_m
+
+        # dstate_0 = np.zeros(state.shape)
+
+        # # only the right hand side of the system of equations is returned
+
+        # dstate_0[self.r_L_ind] = drdt_L
+        # dstate_0[self.r_R_ind] = drdt_R
+        # dstate_0[self.a_L_ind] = dadt_L
+        # dstate_0[self.a_R_ind] = dadt_R
+        # dstate_0[self.m_L_ind] = dmdt_L
+        # dstate_0[self.m_R_ind] = dmdt_R
+
+        # # print("state ",state.shape)
+        # # print("dstate_0 ",dstate_0.shape)
+
+        n_neurons = self.n_neurons
+        n_muscle_cells = self.n_muscle_cells
+
+        r_L = state[0:2*n_neurons:2]
+        r_R = state[1:2*n_neurons:2]
+        a_L = state[2*n_neurons:4*n_neurons:2]
+        a_R = state[2*n_neurons+1:4*n_neurons:2]
+        m_L = state[4*n_neurons:4*n_neurons+n_muscle_cells:2]
+        m_R = state[4*n_neurons+1:4*n_neurons+n_muscle_cells:2]
+
+        # Calculate the derivatives for the right components
+
+        # print("W_mc shape", W_mc.shape)
+        # print("r_L shape", r_L.shape)
+        # print("m_L shape", m_L.shape)
+        
         drdt_L = 1/tau * (-r_L + self.F_sqrt(I - b*a_L - g_in*W_in.dot(r_R)))
-        drdt_R = 1/tau * (-r_R + self.F_sqrt(I - b*a_R - g_in*W_in.dot(r_L)))
-        
-        # idea shu
-        # drdt_R = 1/tau * (-r_R + self.F_sqrt(I - b*a_R - g_in*W_in.dot(r_L)-g_ss*W_ss.dot(s_L)))
+        drdt_R = 1/tau * (-r_R + self.F_sqrt(I - b*a_R - g_in * W_in.dot(r_L)))
 
         dadt_L = 1/tau_a * (-a_L + gamma*r_L)
-        dadt_R =  1/tau_a * (-a_R + gamma*r_R)
+        dadt_R = 1/tau_a * (-a_R + gamma * r_R)
 
-        self.dstate = np.concatenate((drdt_L, dadt_L, drdt_R, dadt_R))
+        dmdt_L = g_mc * np.dot(W_mc, r_L) * (1 - m_L)/taua_m - m_L/taud_m
+        dmdt_R = g_mc * np.dot(W_mc, r_R) * (1 - m_R)/taua_m - m_R/taud_m
+
+        # Initialize the derivative vector
+        dstate = np.zeros_like(state)
+        dstate[0:2*n_neurons:2] = drdt_L
+        dstate[1:2*n_neurons:2] = drdt_R
+        dstate[2*n_neurons:4*n_neurons:2] = dadt_L
+        dstate[2*n_neurons+1:4*n_neurons:2] = dadt_R
+        dstate[4*n_neurons:4*n_neurons+n_muscle_cells:2] = dmdt_L
+        dstate[4*n_neurons+1:4*n_neurons+n_muscle_cells:2] = dmdt_R
+
         #_______________________________________________________________________________________
+        self.dstate = dstate
+        return self.dstate 
 
-        return self.dstate
+#_______________________________________________________________________________________
+        # Add by Clara
+        # tau = self.pars.tau
+        # tau_a = self.pars.taua
+        # gamma = self.pars.gamma
+        # I = self.pars.I
+        # b = self.pars.b
+        # g_in = self.pars.g_in
+        # g_ss = self.pars.g_ss
 
+        # # W_in = self.pars.W_in # is it the inhibitory strength?
+        # W_in = self.connectivity_matrix(self.n_neurons, 1, 2)
+        # W_ss = self.connectivity_matrix(self.n_neurons, 10,0)
+        # # W_mc = self.connectivity_matrix_CPGtoMuscle(self.n_neurons, self.n_muscle_cells)
+
+        # # r_L, a_L, r_R, a_R = np.split(state, 4)
+        
+        # # vector of left neuron activities
+        # r_L = state[0:self.n_neurons]
+        # a_L = state[self.n_neurons:2*self.n_neurons]
+
+        # # vector of right neuron activities
+        # r_R = state[2*self.n_neurons:3*self.n_neurons]
+        # a_R = state[3*self.n_neurons:4*self.n_neurons]
+
+        # print(state.shape)
+
+        # drdt_L = 1/tau * (-r_L + self.F_sqrt(I - b*a_L - g_in*W_in.dot(r_R)))
+        # drdt_R = 1/tau * (-r_R + self.F_sqrt(I - b*a_R - g_in*W_in.dot(r_L)))
+        
+        # # idea shu
+        # # drdt_R = 1/tau * (-r_R + self.F_sqrt(I - b*a_R - g_in*W_in.dot(r_L)-g_ss*W_ss.dot(s_L)))
+
+        # dadt_L = 1/tau_a * (-a_L + gamma*r_L)
+        # dadt_R =  1/tau_a * (-a_R + gamma*r_R)
+
+        # self.dstate = np.concatenate((drdt_L, dadt_L, drdt_R, dadt_R))
+        #_______________________________________________________________________________________

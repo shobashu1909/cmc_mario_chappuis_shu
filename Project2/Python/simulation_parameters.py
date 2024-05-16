@@ -49,8 +49,8 @@ class SimulationParameters:
         # parameters of the firing rate controller
         # "sine" for using the WaveController (Project 1), "firing_rate" for using the FiringRateController (Project 2)
         self.controller = "firing_rate"
-        self.n_neurons = 50  # number of CPG/sensory neurons
-        self.n_muscle_cells = 10  # number of muscle cells
+        self.n_neurons = 50  # number of CPG/sensory neurons, n_cpg
+        self.n_muscle_cells = 10  # number of muscle cells, n_mc
         self.method = "euler"  # integration method (euler or noise)
 
         # muscle cells parameters
@@ -60,20 +60,29 @@ class SimulationParameters:
         # conversion weight from muscle cell activity to muscle activations
         self.act_strength = 0.3
 
-        # CPG pars
-        self.I = 10  # connstant input
-        self.Idiff = 0.  # left-right input difference
+        # CPG pars updated by shu
+        self.I = 10  # constant input current (i.e from higher brain centers)
+        self.Idiff = 0.  # diffrential inout (for turning)
         self.n_asc = 1  # number of ascending CPG connections
         self.n_desc = 2  # number of descending CPG connections
-        self.tau = 0.002  # neuron timescale
-        self.taua = 0.3  # adaptation timescale
+        self.tau = 0.002  # neuron timescale [sec]
+        self.taua = 0.3  # adaptation timescale [sec]
         self.b = 10  # adaptation strength
         self.gamma = 0.5  # adaptation rate
+
         self.w_inh = 2  # inhibitory strength
 
         # add by clara 
         self.g_in  = 2 # CPG coupling strength
         self.g_ss = 0 # strectch to CPG coupling strength
+        ###########add by clara 2
+        self.taua_m = 0.005 # muscle cell activation time scale [s]
+        self.taud_m = 0.02 # muscle cell inactivation time scale [s]
+        self.g_mc = 0.3 # strength
+        self.n_mc = 5 # n_neurons / n_muscle_cells
+
+        # add by shu 15/05
+        self.n_ss = 50 # populations of stretch sensitives neuronsmon each side
 
         # stretch pars
         self.w_stretch = 0  # feedback strength

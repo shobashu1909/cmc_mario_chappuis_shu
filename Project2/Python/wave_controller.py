@@ -18,6 +18,14 @@ class WaveController:
             pars.n_iterations)
         self.n_joints = pars.n_joints
 
+        #_______________________________________________________________________
+        # added by shu
+        self.taum_a = pars.taum_a
+        self.taum_d = pars.taum_d
+        self.g_mc = pars.g_mc
+        #_______________________________________________________________________
+
+
         # state array for recording all the variables
         self.state = np.zeros((pars.n_iterations, 2*self.n_joints))
 
@@ -46,5 +54,6 @@ class WaveController:
         In addition to returning the activation functions, store
         them in self.state for later use offline
         """
+        print("Step function")
         return np.zeros(30)
 
