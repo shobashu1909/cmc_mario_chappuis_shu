@@ -4,6 +4,7 @@ from simulation_parameters import SimulationParameters
 import os
 import numpy as np
 import farms_pylog as pylog
+import matplotlib.pyplot as plt
 
 
 def exercise_multiple():

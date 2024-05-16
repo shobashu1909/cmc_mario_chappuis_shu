@@ -88,6 +88,7 @@ class FiringRateController:
         self.tau_a = self.pars.taua
         self.gamma = self.pars.gamma
         self.I = self.pars.I
+        self.Idiff = self.pars.Idiff
         self.b = self.pars.b
         self.g_in = self.pars.g_in
         # g_ss = self.pars.g_ss
@@ -251,8 +252,8 @@ class FiringRateController:
         self.m_R = state[self.m_R_ind]
 
         # ODEs
-        drdt_L = 1/self.tau * (-self.r_L + self.F_sqrt(self.I - self.b*self.a_L - self.g_in*self.W_in.T.dot(self.r_R)))
-        drdt_R = 1/self.tau * (-self.r_R + self.F_sqrt(self.I - self.b*self.a_R - self.g_in*self.W_in.T.dot(self.r_L)))
+        drdt_L = 1/self.tau * (-self.r_L + self.F_sqrt(self.I + self.Idiff - self.b*self.a_L - self.g_in*self.W_in.T.dot(self.r_R)))
+        drdt_R = 1/self.tau * (-self.r_R + self.F_sqrt(self.I - self.Idiff - self.b*self.a_R - self.g_in*self.W_in.T.dot(self.r_L)))
 
         dadt_L = 1/self.tau_a * (-self.a_L + self.gamma*self.r_L)
         dadt_R =  1/self.tau_a * (-self.a_R + self.gamma*self.r_R)
