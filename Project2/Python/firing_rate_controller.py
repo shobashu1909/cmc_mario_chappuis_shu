@@ -37,6 +37,13 @@ class FiringRateController:
         # according to your implementation
         self.all_v = range(self.n_neurons*2)
 
+        self.r_L_ind = 2*np.arange(0, self.n_neurons)
+        self.r_R_ind = self.r_L_ind + 1
+        self.a_L_ind = 2*np.arange(self.n_neurons, self.n_neurons*2)
+        self.a_R_ind = self.a_L_ind + 1
+        self.m_L_ind = self.muscle_l
+        self.m_R_ind = self.muscle_r
+
         pylog.warning(
             "Implement here the vectorization indexed for the equation variables")
 
@@ -75,6 +82,21 @@ class FiringRateController:
         self.zeros8 = np.zeros(8)
         # pre-computed zero activity for the tail joint
         self.zeros2 = np.zeros(2)
+
+        # parameters
+        self.tau = self.pars.tau
+        self.tau_a = self.pars.taua
+        self.gamma = self.pars.gamma
+        self.I = self.pars.I
+        self.b = self.pars.b
+        self.g_in = self.pars.g_in
+        # g_ss = self.pars.g_ss
+        self.taua_m = self.pars.taua_m
+        self.taud_m = self.pars.taud_m
+        self.g_mc = self.pars.g_mc
+        self.W_in = self.connectivity_matrix(self.n_neurons, 1, 2)
+        # W_ss = self.connectivity_matrix(self.n_neurons, 10, 0)
+        self.W_mc = self.connectivity_matrix_CPGtoMuscle(self.n_neurons, self.n_muscle_cells, self.pars.n_mc)
 
     def get_ou_noise_process_dw(self, timestep, x_prev, sigma):
         """
@@ -136,27 +158,17 @@ class FiringRateController:
         muscles = np.zeros(2*self.n_muscle_cells)
         i_L = np.arange(0, 19, 2)
         i_R = np.arange(1, 20, 2)
-        muscles[i_L] = self.m_L
-        muscles[i_R] = self.m_R
+        muscles[i_L] = self.pars.act_strength*self.state[iteration][self.m_L_ind]
+        muscles[i_R] = self.pars.act_strength*self.state[iteration][self.m_R_ind]
         #_______________________________________________________________________________________
         
         return muscles # np.zeros(2 * self.n_muscle_cells)  # here you have to final active muscle equations for the 10 joints
     
-    #_______________________________________________________________________________________
-    # Add by Clara
-    def F(x):
-        return np.sqrt(max(x, 0))
-    #_______________________________________________________________________________________
-    # Add by Shu
+
     def F_sqrt(self, x):
         return np.sqrt(np.maximum(x,0))
 
-    def F_max(self, x):
-        return np.maximum(x,0)
 
-    def F_sigmoid(self, x):
-        return 1/(1+np.exp(-self.pars.lam*(x-self.pars.theta)))
-    
     def connectivity_matrix(self, n_neurons, n_asc, n_desc):
         """
         Implement here the connectivity matrix
@@ -203,7 +215,6 @@ class FiringRateController:
             Connectivity matrix CPG to muscle
         """
         #_______________________________________________________________________________________
-        # To complete
         W_mc = np.zeros((n_muscle_cells, n_neurons))
         
         for i in range(n_muscle_cells):
@@ -231,30 +242,6 @@ class FiringRateController:
         dstate: <np.array>
             Returns derivative of state
         """
-        #_______________________________________________________________________________________
-        # Add by Clara
-        tau = self.pars.tau
-        tau_a = self.pars.taua
-        gamma = self.pars.gamma
-        I = self.pars.I
-        b = self.pars.b
-        g_in = self.pars.g_in
-        # g_ss = self.pars.g_ss
-        taua_m = self.pars.taua_m
-        taud_m = self.pars.taud_m
-        g_mc = self.pars.g_mc
-        
-
-        W_in = self.connectivity_matrix(self.n_neurons, 1, 2)
-        # W_ss = self.connectivity_matrix(self.n_neurons, 10, 0)
-        W_mc = self.connectivity_matrix_CPGtoMuscle(self.n_neurons, self.n_muscle_cells, self.pars.n_mc)
-
-        self.r_L_ind = 2*np.arange(0, self.n_neurons)
-        self.r_R_ind = self.r_L_ind + 1
-        self.a_L_ind = 2*np.arange(self.n_neurons, self.n_neurons*2)
-        self.a_R_ind = self.a_L_ind + 1
-        self.m_L_ind = 4*self.n_neurons + 2*np.arange(0, self.n_muscle_cells)
-        self.m_R_ind = self.m_L_ind + 1
 
         self.r_L = state[self.r_L_ind]
         self.r_R = state[self.r_R_ind]
@@ -263,37 +250,24 @@ class FiringRateController:
         self.m_L = state[self.m_L_ind]
         self.m_R = state[self.m_R_ind]
 
-        # vector of left neuron activities
-        # r_L = state[0:self.n_neurons]
-        # r_R = state[self.n_neurons:2*self.n_neurons]
+        # ODEs
+        drdt_L = 1/self.tau * (-self.r_L + self.F_sqrt(self.I - self.b*self.a_L - self.g_in*self.W_in.T.dot(self.r_R)))
+        drdt_R = 1/self.tau * (-self.r_R + self.F_sqrt(self.I - self.b*self.a_R - self.g_in*self.W_in.T.dot(self.r_L)))
 
-        # vector of right neuron activities
-        # a_L = state[2*self.n_neurons:3*self.n_neurons]
-        # a_R = state[3*self.n_neurons:4*self.n_neurons]
+        dadt_L = 1/self.tau_a * (-self.a_L + self.gamma*self.r_L)
+        dadt_R =  1/self.tau_a * (-self.a_R + self.gamma*self.r_R)
 
+        dmdt_L = self.g_mc * self.W_mc.dot(self.r_L) * (1 - self.m_L)/self.taua_m - self.m_L/self.taud_m
+        dmdt_R = self.g_mc * self.W_mc.dot(self.r_R) * (1 - self.m_R)/self.taua_m - self.m_R/self.taud_m
 
-        print(state.shape)
+        
+        self.dstate[self.r_L_ind] = drdt_L
+        self.dstate[self.r_R_ind] = drdt_R
+        self.dstate[self.a_L_ind] = dadt_L
+        self.dstate[self.a_R_ind] = dadt_R
+        self.dstate[self.m_L_ind] = dmdt_L
+        self.dstate[self.m_R_ind] = dmdt_R
 
-        drdt_L = 1/tau * (-self.r_L + self.F_sqrt(I - b*self.a_L - g_in*W_in.dot(self.r_R)))
-        drdt_R = 1/tau * (-self.r_R + self.F_sqrt(I - b*self.a_R - g_in*W_in.dot(self.r_L)))
-
-        dadt_L = 1/tau_a * (-self.a_L + gamma*self.r_L)
-        dadt_R =  1/tau_a * (-self.a_R + gamma*self.r_R)
-
-        dmdt_L = g_mc * W_mc.dot(self.r_L) * (1 - self.m_L)/taua_m - self.m_L/taud_m
-        dmdt_R = g_mc * W_mc.dot(self.r_R) * (1 - self.m_R)/taua_m - self.m_R/taud_m
-
-        dstate_0 = np.zeros(state.shape)
-        dstate_0[self.r_L_ind] = drdt_L
-        dstate_0[self.r_R_ind] = drdt_R
-        dstate_0[self.a_L_ind] = dadt_L
-        dstate_0[self.a_R_ind] = dadt_R
-        dstate_0[self.m_L_ind] = dmdt_L
-        dstate_0[self.m_R_ind] = dmdt_R
-
-        print(dstate_0)
-
-        self.dstate = dstate_0
         #_______________________________________________________________________________________
 
         return self.dstate
