@@ -43,6 +43,8 @@ class FiringRateController:
         self.a_R_ind = self.a_L_ind + 1
         self.m_L_ind = self.muscle_l
         self.m_R_ind = self.muscle_r
+        self.s_L_ind = 2*np.arange(self.n_neurons*2 + self.n_muscle_cells, self.n_neurons*3 + self.n_muscle_cells) 
+        self.s_R_ind = self.s_L_ind + 1
 
         pylog.warning(
             "Implement here the vectorization indexed for the equation variables")
@@ -86,18 +88,20 @@ class FiringRateController:
         # parameters
         self.tau = self.pars.tau
         self.tau_a = self.pars.taua
+        self.tau_str = self.pars.tau_str
         self.gamma = self.pars.gamma
         self.I = self.pars.I
         self.Idiff = self.pars.Idiff
         self.b = self.pars.b
         self.g_in = self.pars.g_in
-        # g_ss = self.pars.g_ss
+        self.g_ss = self.pars.g_ss
         self.taua_m = self.pars.taua_m
         self.taud_m = self.pars.taud_m
         self.g_mc = self.pars.g_mc
         self.W_in = self.connectivity_matrix(self.n_neurons, 1, 2)
-        # W_ss = self.connectivity_matrix(self.n_neurons, 10, 0)
+        self.W_ss = self.connectivity_matrix(self.n_neurons, self.pars.n_asc_str, self.pars.n_desc_str)
         self.W_mc = self.connectivity_matrix_CPGtoMuscle(self.n_neurons, self.n_muscle_cells, self.pars.n_mc)
+        self.stretch_feedback = self.pars.stretch_feedback
 
     def get_ou_noise_process_dw(self, timestep, x_prev, sigma):
         """
@@ -250,24 +254,36 @@ class FiringRateController:
         self.a_R = state[self.a_R_ind]
         self.m_L = state[self.m_L_ind]
         self.m_R = state[self.m_R_ind]
+        self.s_L = state[self.s_L_ind]
+        self.s_R = state[self.s_R_ind] 
+
 
         # ODEs
-        drdt_L = 1/self.tau * (-self.r_L + self.F_sqrt(self.I + self.Idiff - self.b*self.a_L - self.g_in*self.W_in.T.dot(self.r_R)))
-        drdt_R = 1/self.tau * (-self.r_R + self.F_sqrt(self.I - self.Idiff - self.b*self.a_R - self.g_in*self.W_in.T.dot(self.r_L)))
+        drdt_L = 1/self.tau * (-self.r_L + self.F_sqrt(self.I + self.Idiff - self.b*self.a_L - self.g_in*self.W_in.T.dot(self.r_R) - self.g_ss*self.W_ss.T.dot(self.s_R)))
+        drdt_R = 1/self.tau * (-self.r_R + self.F_sqrt(self.I - self.Idiff - self.b*self.a_R - self.g_in*self.W_in.T.dot(self.r_L) - self.g_ss*self.W_ss.T.dot(self.s_L)))
 
         dadt_L = 1/self.tau_a * (-self.a_L + self.gamma*self.r_L)
         dadt_R =  1/self.tau_a * (-self.a_R + self.gamma*self.r_R)
 
         dmdt_L = self.g_mc * self.W_mc.dot(self.r_L) * (1 - self.m_L)/self.taua_m - self.m_L/self.taud_m
-        dmdt_R = self.g_mc * self.W_mc.dot(self.r_R) * (1 - self.m_R)/self.taua_m - self.m_R/self.taud_m
+        dmdt_R = self.g_mc * self.W_mc.dot(self.r_R) * (1 - self.m_R)/self.taua_m - self.m_R/self.taud_m 
 
-        
+
         self.dstate[self.r_L_ind] = drdt_L
         self.dstate[self.r_R_ind] = drdt_R
         self.dstate[self.a_L_ind] = dadt_L
         self.dstate[self.a_R_ind] = dadt_R
         self.dstate[self.m_L_ind] = dmdt_L
         self.dstate[self.m_R_ind] = dmdt_R
+
+        if self.stretch_feedback:
+            interp_func = CubicSpline(self.poses, pos)
+            theta_i = interp_func(self.poses_ext)
+            
+            dsdt_L = 1/self.tau_str * self.F_sqrt(theta_i)*(1 - self.s_L) - self.s_L
+            dsdt_R = 1/self.tau_str * self.F_sqrt(-theta_i)*(1 - self.s_R) - self.s_R 
+            self.dstate[self.s_L_ind] = dsdt_L
+            self.dstate[self.s_R_ind] = dsdt_R
 
         #_______________________________________________________________________________________
 
