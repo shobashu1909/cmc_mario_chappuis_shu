@@ -278,10 +278,10 @@ class FiringRateController:
 
         if self.stretch_feedback:
             interp_func = CubicSpline(self.poses, pos)
-            theta_i = interp_func(self.poses_ext)
+            self.theta_i = interp_func(self.poses_ext)
             
-            dsdt_L = 1/self.tau_str * self.F_sqrt(theta_i)*(1 - self.s_L) - self.s_L
-            dsdt_R = 1/self.tau_str * self.F_sqrt(-theta_i)*(1 - self.s_R) - self.s_R 
+            dsdt_L = 1/self.tau_str * self.F_sqrt(self.theta_i)*(1 - self.s_L) - self.s_L
+            dsdt_R = 1/self.tau_str * self.F_sqrt(-self.theta_i)*(1 - self.s_R) - self.s_R 
             self.dstate[self.s_L_ind] = dsdt_L
             self.dstate[self.s_R_ind] = dsdt_R
 

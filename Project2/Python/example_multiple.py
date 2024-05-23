@@ -12,29 +12,27 @@ def exercise_multiple():
     log_path = './logs/example_multiple/'
     os.makedirs(log_path, exist_ok=True)
 
-    nsim = 2
+    nsim = 5
 
     pylog.info(
         "Running multiple simulations in parallel from a list of SimulationParameters")
     pars_list = [
         SimulationParameters(
-            simulation_i=i*nsim+j,
+            simulation_i=i,
             n_iterations=3001,
             log_path=log_path,
             video_record=False,
             compute_metrics=2,
-            I=I,
-            b=b,
+            g_ss = g_ss,
             headless=True,
-            print_metrics=False
+            print_metrics=True
         )
-        for i, I in enumerate(np.linspace(0.05, 3, nsim))
-        for j, b in enumerate(np.linspace(8, 12, nsim))
+        for i, g_ss in enumerate(np.linspace(0, 15, nsim))
     ]
 
     run_multiple(pars_list, num_process=8)
-
+    
 
 if __name__ == '__main__':
     exercise_multiple()
-
+    print(np.linspace(0, 15, 5))

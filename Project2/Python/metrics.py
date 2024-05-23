@@ -355,6 +355,8 @@ def compute_controller(
     # ------ amplitude of the limbs at steady-state ------
     metrics["amp"] = np.max(signals)-np.min(signals)
 
+    metrics["g_ss"] = network.pars.g_ss
+
     return metrics
 
 

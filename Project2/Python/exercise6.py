@@ -12,74 +12,94 @@ def exercise6(**kwargs):
     pylog.info("Ex 6")
     log_path = './logs/exercise6/'
     os.makedirs(log_path, exist_ok=True)
-    all_pars = SimulationParameters(
+
+    multiple_sim = False
+
+    all_pars_single = SimulationParameters(
         n_iterations=10001,
         log_path=log_path,
         compute_metrics=3,
         return_network=True,
-        g_ss = 3,
+        g_ss = 2,
         stretch_feedback = True,
         **kwargs
     )
 
+    nsim = 5
+
+    pars_list = [
+        SimulationParameters(
+            simulation_i=i,
+            n_iterations=5001,
+            log_path=log_path,
+            video_record=False,
+            compute_metrics=2,
+            g_ss = g_ss,
+            headless=True,
+            print_metrics=True
+        )
+        for i, g_ss in enumerate(np.linspace(0, 15, nsim))
+    ]
+            
+
     pylog.info("Running the simulation")
-    controller = run_single(
-        all_pars
-    )
 
-    pylog.info("Plotting the result")
+    if not multiple_sim: #one simulation
+        controller = run_single(all_pars_single)
 
-    left_idx = controller.muscle_l
-    right_idx = controller.muscle_r
+        pylog.info("Plotting the result")
 
-    # example plot using plot_left_right
-    plt.figure('muscle_activities_single')
-    plot_left_right(
-        controller.times,
-        controller.state,
-        left_idx,
-        right_idx,
-        cm="green",
-        offset=0.1)
+        left_idx = controller.muscle_l
+        right_idx = controller.muscle_r
 
-    # plot CPG activities
-    plt.figure('CPG_activities_single')
-    plot_left_right(
-        controller.times,
-        controller.state,
-        controller.r_L_ind,
-        controller.r_R_ind,
-        cm='green',
-        offset=0.1    
-    )
+        # plot muscle activity
+        plt.figure('muscle_activities_single')
+        plot_left_right(
+            controller.times,
+            controller.state,
+            left_idx,
+            right_idx,
+            cm="green",
+            offset=0.1)
 
-    # plot sensory neurons activities
-    plt.figure('sensory_neurons_activities_single')
-    plot_left_right(
-        controller.times,
-        controller.state,
-        controller.s_L_ind,
-        controller.s_R_ind,
-        cm='green',
-        offset=0.1    
-    )
+        # plot CPG activities
+        plt.figure('CPG_activities_single')
+        plot_left_right(
+            controller.times,
+            controller.state,
+            controller.r_L_ind,
+            controller.r_R_ind,
+            cm='green',
+            offset=0.1    
+        )
 
-    # example plot using plot_trajectory
-    #plt.figure("trajectory_single")
-    #plot_trajectory(controller)
+        # plot sensory neurons activities
+        plt.figure('sensory_neurons_activities_single')
+        plot_left_right(
+            controller.times,
+            controller.state,
+            controller.s_L_ind,
+            controller.s_R_ind,
+            cm='green',
+            offset=0.1    
+        )
 
-    # example plot using plot_time_histories_multiple_windows
-    plt.figure("joint positions_single")
-    plot_time_histories_multiple_windows_modified(
-        controller.times,
-        controller.joints_positions,
-        offset=-0.4,
-        colors="green",
-        ylabel="joint positions",
-        lw=1
-    )
+         # plot joint positions
+        plt.figure("joint positions_single")
+        plot_time_histories_multiple_windows_modified(
+            controller.times,
+            controller.joints_positions,
+            offset=-0.4,
+            colors="green",
+            ylabel="joint positions",
+            lw=1
+        )
 
-    print(compute_controller(controller))
+        print(compute_controller(controller))
+    
+    if multiple_sim: #run multiple simulations
+        run_multiple(pars_list, 6)
+
 
 
 

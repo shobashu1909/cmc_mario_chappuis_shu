@@ -3,7 +3,7 @@ from util.run_closed_loop import run_single
 from simulation_parameters import SimulationParameters
 import os
 import matplotlib.pyplot as plt
-from plotting_common import plot_left_right, plot_trajectory, plot_time_histories, plot_time_histories_multiple_windows#_modified
+from plotting_common import plot_left_right, plot_trajectory, plot_time_histories, plot_time_histories_multiple_windows_modified
 import farms_pylog as pylog
 from metrics import compute_controller
 
@@ -25,9 +25,7 @@ def exercise3(**kwargs):
     )
 
     pylog.info("Running the simulation")
-    controller = run_single(
-        all_pars
-    )
+    controller = run_single(all_pars)
 
     pylog.info("Plotting the result")
 
@@ -61,7 +59,7 @@ def exercise3(**kwargs):
 
     # example plot using plot_time_histories_multiple_windows
     plt.figure("joint positions_single")
-    plot_time_histories_multiple_windows(
+    plot_time_histories_multiple_windows_modified(
         controller.times,
         controller.joints_positions,
         offset=-0.4,

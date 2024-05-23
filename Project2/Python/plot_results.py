@@ -35,6 +35,7 @@ def plot_exercise_multiple(n_simulations, logdir):
     )
 
 
+
 def main(plot=True):
     """Main"""
 
