@@ -13,10 +13,10 @@ def exercise6(**kwargs):
     log_path = './logs/exercise6/'
     os.makedirs(log_path, exist_ok=True)
 
-    multiple_sim = False
+    multiple_sim = False #change to True to test many values of g_ss
 
     all_pars_single = SimulationParameters(
-        n_iterations=10001,
+        n_iterations=5001,
         log_path=log_path,
         compute_metrics=3,
         return_network=True,

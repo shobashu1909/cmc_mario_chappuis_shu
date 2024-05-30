@@ -15,7 +15,7 @@ def exercise3(**kwargs):
     os.makedirs(log_path, exist_ok=True)
 
     all_pars = SimulationParameters(
-        n_iterations=10001,
+        n_iterations=5001,
         log_path=log_path,
         compute_metrics=3,
         return_network=True,
@@ -65,17 +65,6 @@ def exercise3(**kwargs):
         offset=-0.4,
         colors="green",
         ylabel="joint positions",
-        lw=1
-    )
-
-    # example plot using plot_time_histories
-    plt.figure("link y-velocities_single")
-    plot_time_histories(
-        controller.times,
-        controller.links_velocities[:, :, 1],
-        offset=-0.,
-        colors="green",
-        ylabel="link y-velocities",
         lw=1
     )
 
