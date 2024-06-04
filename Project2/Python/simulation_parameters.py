@@ -1,6 +1,6 @@
 
 """Simulation parameters"""
-
+from metrics import compute_all
 
 class SimulationParameters:
     """Simulation parameters"""
@@ -88,6 +88,7 @@ class SimulationParameters:
 
         # noise pars
         self.noise_sigma = 0  # sigma of the OU noise process
+
 
         # NOTE: This overrides the previous declarations
         self.__dict__.update(kwargs)

@@ -34,11 +34,32 @@ def plot_exercise_multiple(n_simulations, logdir):
         cmap='nipy_spectral'
     )
 
+def plot_exercise6(n_simulations, logdir):
+    """
+    Example showing how to load a simulation file and use the plot2d function
+    """
+    pylog.info(
+        "Example showing how to load the simulation file and use the plot2d function")
+    fspeeds = np.zeros([n_simulations, 3])
+    for i in range(n_simulations):
+        # load controller
+        controller = load_object(logdir+"controller"+str(i))
+        fspeeds[i] = [
+            controller.pars.amp,
+            controller.pars.wavefrequency,
+            np.mean(controller.metrics["fspeed_cycle"])
+        ]
 
+    plt.figure('exercise6', figsize=[10, 10])
+    plot_2d(
+        fspeeds,
+        ['Amp', 'wavefrequency', 'Forward Speed [m/s]'],
+        cmap='nipy_spectral'
+    )
 
 def main(plot=True):
     """Main"""
-
+    plot_exercise6(5, './logs/exercise6/')
     # pylog.info("Here is an example to show how you can load a single simulation and which data you can load")
     # controller = load_object("logs/example_single/controller0")
 

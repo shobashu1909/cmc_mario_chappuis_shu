@@ -360,3 +360,15 @@ def plot_time_histories_multiple_windows_modified(
         if closefig:
             plt.close()
 
+def plot_1d_merge(ax, results, labels, log=False, cmap=None):
+    """ Plot result on given axes.
+    
+    results - The results are given as a 2d array of dimensions [N, 2].
+    labels - The labels should be a list of two strings for the xlabel and the ylabel (in that order).
+    log - Set log to True for logarithmic scale.
+    cmap - You can set the color palette with cmap. For example, set cmap='nipy_spectral' for high contrast results.
+    """
+    ax.plot(results[:, 0], results[:, 1], color=cmap)
+    ax.set_xlabel(labels[0])
+    ax.set_ylabel(labels[1])
+    ax.grid(True)
