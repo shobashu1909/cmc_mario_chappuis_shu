@@ -151,6 +151,38 @@ def plot_time_histories_multiple_windows(
         if closefig:
             plt.close()
 
+def plot_1d(results, labels, log=False, cmap=None):
+    """Plot result
+
+    results - The results are given as a 2d array of dimensions [N, 2].
+
+    labels - The labels should be a list of two string for the xlabel and the
+    ylabel (in that order).
+
+    log - Set log to True for logarithmic scale.
+
+    cmap - You can set the color palette with cmap. For example,
+    set cmap='nipy_spectral' for high constrast results.
+
+    """
+    plt.plot(results[:, 0], results[:, 1])
+    plt.xlabel(labels[0])
+    plt.ylabel(labels[1])
+    plt.grid(True)
+
+def plot_1d_merge(ax, results, labels, log=False, cmap=None):
+    """ Plot result on given axes.
+    
+    results - The results are given as a 2d array of dimensions [N, 2].
+    labels - The labels should be a list of two strings for the xlabel and the ylabel (in that order).
+    log - Set log to True for logarithmic scale.
+    cmap - You can set the color palette with cmap. For example, set cmap='nipy_spectral' for high contrast results.
+    """
+    ax.plot(results[:, 0], results[:, 1], color=cmap)
+    ax.set_xlabel(labels[0])
+    ax.set_ylabel(labels[1])
+    ax.grid(True)
+
 
 def plot_2d(results, labels, n_data=300, log=False, cmap=None):
     """Plot result
@@ -287,3 +319,75 @@ def save_figures(**kwargs):
     for name in figures:
         save_figure(name, extensions=kwargs.pop('extensions', ['pdf']))
 
+
+def plot_time_histories_multiple_windows_modified(
+    time: np.array,
+    state: np.array,
+    **kwargs,
+):
+    """
+    Modified plot_time_histories_multiple_windows to make it more readable. 
+    (Plot time histories of a vector of states on multiple subplots).
+    
+    Parameters:
+        time: array of times
+        state: array of states with shape (niterations,nvar)
+        kwargs: optional plotting properties (see below)
+    """
+
+    xlabel = kwargs.pop('xlabel', "Time [s]")
+    ylabel = kwargs.pop('ylabel', "Activity [-]")
+    title = kwargs.pop('title', None)
+    labels = kwargs.pop('labels', None)
+    colors = kwargs.pop('colors', None)
+    xlim = kwargs.pop('xlim', [0, time[-1]])
+    ylim = kwargs.pop('ylim', None)
+    savepath = kwargs.pop('savepath', None)
+    lw = kwargs.pop('lw', 1.0)
+    xticks = kwargs.pop('xticks', None)
+    yticks = kwargs.pop('yticks', None)
+    xticks_labels = kwargs.pop('xticks_labels', None)
+    yticks_labels = kwargs.pop('xticks_labels', None)
+    closefig = kwargs.pop('closefig', True)
+
+    if isinstance(colors, list) and len(colors) == state.shape[1]:
+        colors = colors
+    elif not isinstance(colors, list):
+        colors = [colors for _ in range(state.shape[1])]
+    else:
+        raise Exception("Color list not a vecotor of the correct size!")
+
+    n = state.shape[1]
+
+    plt.rc('xtick', labelsize=8)
+    plt.rc('ytick', labelsize=8)
+
+    if title:
+        plt.figure(title)
+        # plt.ylabel("Joints position")
+    for (idx, vector) in enumerate(state.transpose()):
+        if not labels:
+            label = None
+        else:
+            label = labels[idx]
+
+        if idx == int(n/2):
+            plt.ylabel(ylabel)
+        plt.subplot(n, 1, idx+1)
+        plt.plot(time, vector, label=label, color=colors[idx], linewidth=lw)
+ 
+        plt.xlim(xlim)
+        plt.ylim(ylim)
+    if labels:
+        plt.legend()
+    plt.xlabel(xlabel)
+    plt.subplots_adjust(hspace=0.8)
+    plt.grid(False)
+    if xticks:
+        plt.xticks(xticks, labels=xticks_labels)
+    if yticks:
+        plt.yticks(yticks, labels=yticks_labels, labelsize=1)
+    if savepath:
+        plt.savefig(savepath)
+        if closefig:
+            plt.close()
